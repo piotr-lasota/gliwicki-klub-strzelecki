@@ -6,6 +6,7 @@ import FacebookCard from '../components/cards/FacebookCard';
 import SEO from '../components/SeoHelmet';
 import LocationCard from '../components/cards/LocationCard';
 import OpeningHoursCard from '../components/cards/OpeningHoursCard';
+import MembershipCard from '../components/cards/MembershipCard';
 
 export default function Index() {
   return (
@@ -15,6 +16,9 @@ export default function Index() {
         <Grid container direction="row" spacing={4} alignItems="center">
           <Grid item xs={12}>
             <StaticImage src="../images/logo-gks-black.png" alt="Logo klubu" />
+          </Grid>
+          <Grid item xs={12}>
+            <MembershipCard />
           </Grid>
           <Grid item xs={12}>
             <OpeningHoursCard />
