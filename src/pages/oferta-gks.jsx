@@ -105,8 +105,7 @@ function FirearmsLicenseItem() {
               <Card>
                 <CardContent
                   sx={{
-                    background: (theme) => theme.palette.success.main,
-                    color: (theme) => theme.palette.success.contrastText
+                    background: (theme) => theme.palette.success.light
                   }}
                 >
                   <Typography>
@@ -200,7 +199,7 @@ function Returns() {
 
 function Limitations() {
   return (
-    <Grid item xs={12} sx={{ mb: 5 }}>
+    <Grid item xs={12}>
       <Card sx={{ background: (theme) => theme.palette.warning.light }}>
         <CardHeader title="Uwaga" titleTypographyProps={{ align: 'center' }} />
         <CardContent>
@@ -214,11 +213,37 @@ function Limitations() {
   );
 }
 
+function SignUp() {
+  return (
+    <Grid item xs={12}>
+      <Card sx={{ background: (theme) => theme.palette.success.light }}>
+        <CardHeader
+          title="Chcesz dołączyć?"
+          titleTypographyProps={{ align: 'center' }}
+        />
+        <CardContent>
+          <Typography align="center" variant="h6">
+            Świetnie się składa! Gliwicki Klub Strzelecki prowadzi obecnie nabór
+            członków!
+          </Typography>
+          <Typography align="center" variant="h6">
+            Prześlij nam list motywacyjny na adres{' '}
+            <b>gliwickiklubstrzelecki@gmail.com</b>
+          </Typography>
+          <Typography align="center" sx={{ mt: 2 }}>
+            Z wybranymi kandydatami skontaktujemy się w przeciągu tygodnia
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid>
+  );
+}
+
 export default function Offer() {
   return (
     <Container maxWidth="lg">
       <SEO noTitleTemplate />
-      <Box mt={4}>
+      <Box my={4}>
         <Grid container direction="row" spacing={4} alignItems="center">
           <Grid item xs={12}>
             <Container maxWidth="xs">
@@ -235,6 +260,7 @@ export default function Offer() {
           <FirearmsLicenseItem />
           <Returns />
           <Limitations />
+          <SignUp />
         </Grid>
       </Box>
     </Container>
