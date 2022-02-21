@@ -47,7 +47,8 @@ module.exports = {
             google: [
               {
                 family: 'Titillium Web',
-                variants: ['300', '400', '500']
+                variants: ['300', '400', '500'],
+                subsets: ['latin', 'latin-ext']
               }
             ]
           }
