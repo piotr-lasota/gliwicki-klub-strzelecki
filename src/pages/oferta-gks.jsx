@@ -244,7 +244,7 @@ function SignUp() {
 export default function Offer() {
   return (
     <Container maxWidth="lg">
-      <SEO noTitleTemplate />
+      <SEO title="Oferta" />
       <Box my={4}>
         <Grid container direction="row" spacing={4} alignItems="center">
           <Grid item xs={12}>
