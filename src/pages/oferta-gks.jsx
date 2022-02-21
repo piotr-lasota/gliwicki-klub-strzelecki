@@ -204,8 +204,10 @@ function Limitations() {
         <CardHeader title="Uwaga" titleTypographyProps={{ align: 'center' }} />
         <CardContent>
           <Typography align="center" variant="h6">
-            Gliwicki Klub Strzelecki <b>nie</b> prowadzi strzelań komercyjnych.
-            Dostęp do strzelnicy i broni jest możliwy wyłącznie dla członków.
+            Gliwicki Klub Strzelecki nie prowadzi indywidualnych strzelań
+            komercyjnych. Dostęp do strzelnicy i broni jest możliwy wyłącznie
+            dla członków klubu lub grup zorganizowanych po wcześniejszym
+            uzgodnieniu.
           </Typography>
         </CardContent>
       </Card>
