@@ -6,12 +6,11 @@ import {
   CardContent,
   CardHeader,
   Container,
-  Divider,
   Grid,
   Typography
 } from '@mui/material';
 import { StaticImage } from 'gatsby-plugin-image';
-import { Button } from 'gatsby-theme-material-ui';
+import { Button, CardActionArea } from 'gatsby-theme-material-ui';
 import SEO from '../components/SeoHelmet';
 
 function SummaryCard({ title, children }) {
@@ -212,47 +211,37 @@ function Limitations() {
               uzgodnieniu.
             </Typography>
           </Box>
-          <Divider />
-          <Box sx={{ mt: 2 }}>
-            <Typography align="center" variant="h6">
-              Rekrutacja do klubu jest w obecnej chwili wstrzymana
-            </Typography>
-            <Typography align="center" variant="h6">
-              Zainteresowanych prosimy o wysyłanie nam listu motywacyjnego na
-              adres <b>gliwickiklubstrzelecki@gmail.com</b>
-            </Typography>
-            <Typography align="center" sx={{ mt: 2 }} variant="h6">
-              Z wybranymi kandydatami skontaktujemy się w przeciągu tygodnia
-            </Typography>
-          </Box>
         </CardContent>
       </Card>
     </Grid>
   );
 }
 
-// eslint-disable-next-line no-unused-vars
 function SignUp() {
   return (
-    <Grid item xs={12}>
-      <Card sx={{ background: (theme) => theme.palette.warning.light }}>
-        <CardHeader
-          title="Chcesz dołączyć?"
-          titleTypographyProps={{ align: 'center' }}
-        />
-        <CardContent>
-          <Typography align="center" variant="h6">
-            Rekrutacja do klubu jest w obecnej chwili wstrzymana
-          </Typography>
-          <Typography align="center" variant="h6">
-            Prześlij nam list motywacyjny na adres{' '}
-            <b>gliwickiklubstrzelecki@gmail.com</b>
-          </Typography>
-          <Typography align="center" sx={{ mt: 2 }}>
-            Z wybranymi kandydatami skontaktujemy się w przeciągu tygodnia
-          </Typography>
-        </CardContent>
-      </Card>
+    <Grid item xs={12} alignItems="center">
+      <CardActionArea to="https://www.survio.com/survey/d/S9C9E6Q8R7H5H5J5K">
+        <Card sx={{ background: (theme) => theme.palette.success.light }}>
+          <CardHeader
+            title="Rekrutacja"
+            titleTypographyProps={{ align: 'center' }}
+          />
+          <CardContent>
+            <Typography align="center" variant="h6">
+              Szanowni kandydaci, ogłaszamy{' '}
+              <b>okno rekrutacyjne otwarte do 30.06.2023</b>.
+              <br />
+              Serdecznie zapraszamy do wzięcia udziału w procesie umożliwiającym
+              dołączenie do <b>K.S. Gliwicki Klub Strzelecki</b>.
+              <br />
+              <br />
+              Kliknij tutaj aby wypełnić formularz.
+              <br />
+              Życzymy powodzenia w rekrutacji!
+            </Typography>
+          </CardContent>
+        </Card>
+      </CardActionArea>
     </Grid>
   );
 }
@@ -274,11 +263,11 @@ export default function Offer() {
             </Container>
           </Grid>
 
+          <SignUp />
           <SummaryItem />
           <FirearmsLicenseItem />
           <Returns />
           <Limitations />
-          {/* <SignUp /> */}
         </Grid>
       </Box>
     </Container>
