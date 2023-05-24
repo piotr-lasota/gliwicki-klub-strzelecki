@@ -6,7 +6,6 @@ import {
   CardContent,
   CardHeader,
   Container,
-  Divider,
   Grid,
   Typography
 } from '@mui/material';
@@ -212,45 +211,6 @@ function Limitations() {
               uzgodnieniu.
             </Typography>
           </Box>
-          <Divider />
-          <Box sx={{ mt: 2 }}>
-            <Typography align="center" variant="h6">
-              Rekrutacja do klubu jest w obecnej chwili wstrzymana
-            </Typography>
-            <Typography align="center" variant="h6">
-              Zainteresowanych prosimy o wysyłanie nam listu motywacyjnego na
-              adres <b>gliwickiklubstrzelecki@gmail.com</b>
-            </Typography>
-            <Typography align="center" sx={{ mt: 2 }} variant="h6">
-              Z wybranymi kandydatami skontaktujemy się w przeciągu tygodnia
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
-    </Grid>
-  );
-}
-
-// eslint-disable-next-line no-unused-vars
-function SignUp() {
-  return (
-    <Grid item xs={12}>
-      <Card sx={{ background: (theme) => theme.palette.warning.light }}>
-        <CardHeader
-          title="Chcesz dołączyć?"
-          titleTypographyProps={{ align: 'center' }}
-        />
-        <CardContent>
-          <Typography align="center" variant="h6">
-            Rekrutacja do klubu jest w obecnej chwili wstrzymana
-          </Typography>
-          <Typography align="center" variant="h6">
-            Prześlij nam list motywacyjny na adres{' '}
-            <b>gliwickiklubstrzelecki@gmail.com</b>
-          </Typography>
-          <Typography align="center" sx={{ mt: 2 }}>
-            Z wybranymi kandydatami skontaktujemy się w przeciągu tygodnia
-          </Typography>
         </CardContent>
       </Card>
     </Grid>
@@ -278,7 +238,6 @@ export default function Offer() {
           <FirearmsLicenseItem />
           <Returns />
           <Limitations />
-          {/* <SignUp /> */}
         </Grid>
       </Box>
     </Container>
