@@ -10,7 +10,7 @@ import {
   Typography
 } from '@mui/material';
 import { StaticImage } from 'gatsby-plugin-image';
-import { Button, CardActionArea } from 'gatsby-theme-material-ui';
+import { Button } from 'gatsby-theme-material-ui';
 import SEO from '../components/SeoHelmet';
 
 function SummaryCard({ title, children }) {
@@ -217,35 +217,6 @@ function Limitations() {
   );
 }
 
-function SignUp() {
-  return (
-    <Grid item xs={12} alignItems="center">
-      <CardActionArea to="https://www.survio.com/survey/d/S9C9E6Q8R7H5H5J5K">
-        <Card sx={{ background: (theme) => theme.palette.success.light }}>
-          <CardHeader
-            title="Rekrutacja"
-            titleTypographyProps={{ align: 'center' }}
-          />
-          <CardContent>
-            <Typography align="center" variant="h6">
-              Szanowni kandydaci, ogłaszamy{' '}
-              <b>okno rekrutacyjne otwarte do 30.06.2023</b>.
-              <br />
-              Serdecznie zapraszamy do wzięcia udziału w procesie umożliwiającym
-              dołączenie do <b>K.S. Gliwicki Klub Strzelecki</b>.
-              <br />
-              <br />
-              Kliknij tutaj aby wypełnić formularz.
-              <br />
-              Życzymy powodzenia w rekrutacji!
-            </Typography>
-          </CardContent>
-        </Card>
-      </CardActionArea>
-    </Grid>
-  );
-}
-
 export default function Offer() {
   return (
     <Container maxWidth="lg">
@@ -263,7 +234,6 @@ export default function Offer() {
             </Container>
           </Grid>
 
-          <SignUp />
           <SummaryItem />
           <FirearmsLicenseItem />
           <Returns />
