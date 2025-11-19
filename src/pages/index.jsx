@@ -7,7 +7,7 @@ import SEO from '../components/SeoHelmet';
 import LocationCard from '../components/cards/LocationCard';
 import OpeningHoursCard from '../components/cards/OpeningHoursCard';
 import MembershipCard from '../components/cards/MembershipCard';
-import SignUpCard from '../components/cards/SignUpCard';
+// import SignUpCard from '../components/cards/SignUpCard';
 
 export default function Index() {
   return (
@@ -18,9 +18,9 @@ export default function Index() {
           <Grid item xs={12}>
             <StaticImage src="../images/logo-gks-black.png" alt="Logo klubu" />
           </Grid>
-          <Grid item xs={12}>
-            <SignUpCard />
-          </Grid>
+          {/*<Grid item xs={12}>*/}
+          {/*  <SignUpCard />*/}
+          {/*</Grid>*/}
           <Grid item xs={12}>
             <MembershipCard />
           </Grid>
