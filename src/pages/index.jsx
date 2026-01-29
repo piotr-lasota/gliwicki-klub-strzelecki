@@ -7,6 +7,7 @@ import SEO from '../components/SeoHelmet';
 import LocationCard from '../components/cards/LocationCard';
 import OpeningHoursCard from '../components/cards/OpeningHoursCard';
 import MembershipCard from '../components/cards/MembershipCard';
+import ChildProtectionCard from '../components/cards/ChildProtectionCard';
 // import SignUpCard from '../components/cards/SignUpCard';
 
 export default function Index() {
@@ -32,6 +33,9 @@ export default function Index() {
           </Grid>
           <Grid item xs={12}>
             <FacebookCard />
+          </Grid>
+          <Grid item xs={12}>
+            <ChildProtectionCard />
           </Grid>
           <Grid item xs={12}>
             <Copyright />
