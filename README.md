@@ -10,6 +10,7 @@ public/
 ├── style.css
 ├── assets/             # logo i zdjęcie poglądowe
 ├── 404.html            # strona błędu
+├── staticwebapp.config.json  # konfiguracja hostingu Azure
 └── metryczka/          # aplikacja do wypełniania metryczek PDF
 ```
 
@@ -23,7 +24,8 @@ wyłącznie lokalnie w przeglądarce (`localStorage`).
 
 Push na `main` uruchamia GitHub Actions i wdraża zawartość katalogu
 `public/` do Azure Static Web Apps. Konfiguracja hostingu znajduje się
-w `staticwebapp.config.json`.
+w `public/staticwebapp.config.json` (katalog `app_location` z workflow —
+Azure szuka pliku konfiguracji właśnie tam).
 
 ## Rozwój
 
