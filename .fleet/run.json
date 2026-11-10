@@ -2,10 +2,14 @@
     "configurations": [
         {
             "type": "command",
-            "name": "Develop",
-            "program": "yarn",
+            "name": "Serve",
+            "program": "python3",
             "args": [
-                "develop"
+                "-m",
+                "http.server",
+                "8000",
+                "--directory",
+                "public"
             ]
         }
     ]
