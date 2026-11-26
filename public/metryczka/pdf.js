@@ -40,3 +40,23 @@ async function fillBatchPDF(sourceBytes,fontBytes,forms){
  return merged.save({updateFieldAppearances:false});
 }
 if(typeof module!=='undefined')module.exports.fillBatchPDF=fillBatchPDF;
+
+// Print-ready A4 sheets: two original landscape forms per sheet.
+async function fillPrintPDF(sourceBytes,fontBytes,forms){
+ if(!Array.isArray(forms)||forms.length<1||forms.length>4)throw new Error('Wybierz od 1 do 4 metryczek.');
+ const output=await PDFLib.PDFDocument.create();
+ const [width,height]=PDFLib.PageSizes.A4;
+ for(let i=0;i<forms.length;i++){
+  const filled=await fillOriginalPDF(sourceBytes,fontBytes,forms[i]);
+  const source=await PDFLib.PDFDocument.load(filled);
+  // Embedding pages alone omits widget annotations: flatten their appearances first.
+  source.getForm().flatten({updateFieldAppearances:false});
+  const [embedded]=await output.embedPdf(await source.save(),[0]);
+  const page=i%2===0?output.addPage([width,height]):output.getPage(output.getPageCount()-1);
+  const scale=Math.min(1,width/embedded.width,(height/2)/embedded.height);
+  const w=embedded.width*scale,h=embedded.height*scale;
+  page.drawPage(embedded,{x:(width-w)/2,y:(i%2===0?height/2:0)+(height/2-h)/2,width:w,height:h});
+ }
+ return output.save();
+}
+if(typeof module!=='undefined')module.exports.fillPrintPDF=fillPrintPDF;

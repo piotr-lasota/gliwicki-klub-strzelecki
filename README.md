@@ -16,9 +16,27 @@ public/
 
 ## Aplikacja metryczki
 
-Dostępna pod `/metryczka/`. Pozwala przygotować od 1 do 4 metryczek
-zawodnika i pobrać je jako PDF lub wydrukować. Dane są zapisywane
-wyłącznie lokalnie w przeglądarce (`localStorage`).
+Dostępna pod `/metryczka/`. Dane zawodnika i zawodów wpisuje się raz,
+a checkboxami wybiera od 1 do 4 konkurencji: BIG PISTOL (BP),
+LITTLE PISTOL (LP), SMALL RIFLE (SR) i SHOTGUN.
+
+- **Pobierz do druku — A4** generuje dwie metryczki na każdej stronie A4.
+  Przy trzech metryczkach trzecia jest w górnej połowie drugiej strony.
+  Zapisany PDF należy drukować z programu do PDF: A4, pionowo,
+  jedna strona na arkusz, jednostronnie.
+- **Pobierz metryczki — A5** zachowuje osobne strony z edytowalnymi polami.
+- Wydruk zachowuje oryginalny wzór PDF. Wyniki, stanowisko, zmiana
+  i podpisy pozostają puste do uzupełnienia na zawodach.
+- Aplikacja nie wywołuje automatycznie okna drukowania przeglądarki.
+
+Dane są zapisywane wyłącznie lokalnie w przeglądarce (`localStorage`).
+Na wspólnym komputerze po pracy należy użyć przycisku „Wyczyść”
+i usunąć pobrane PDF. Wypełnienie metryczki nie jest zgłoszeniem na zawody.
+
+Nowa wersja przenosi dane wspólne z lokalnego zestawu poprzedniej wersji;
+konkurencje trzeba zaznaczyć ponownie. Stare wyniki nie są przenoszone.
+Import JSON obsługuje eksporty nowej wersji z checkboxami.
+Przycisk „Wyczyść” usuwa również wcześniejsze lokalne zapisy aplikacji.
 
 ## Wdrożenie
 
