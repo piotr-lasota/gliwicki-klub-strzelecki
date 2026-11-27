@@ -11,6 +11,7 @@ public/
 ├── assets/             # logo i zdjęcie poglądowe
 ├── 404.html            # strona błędu
 ├── staticwebapp.config.json  # konfiguracja hostingu Azure
+├── 2026-kluby.json     # lista klubów do wyszukiwarki
 └── metryczka/          # aplikacja do wypełniania metryczek PDF
 ```
 
@@ -22,6 +23,10 @@ LITTLE PISTOL (LP), SMALL RIFLE (SR) i SHOTGUN.
 
 - Podgląd metryczek to czysty HTML/CSS w układzie oryginalnego formularza
   (bez grafiki w tle) — dwie metryczki na stronę A4.
+- Pole **Klub** jest wyszukiwarką klubów z listy
+  `public/2026-kluby.json` (po nazwie skróconej i pełnej).
+  Po wybraniu klubu pole **Siedziba klubu** uzupełnia się automatycznie
+  adresem z listy.
 - **Pobierz** generuje PDF z oryginalnego formularza,
   po dwie metryczki na stronie A4. Drukować: A4, pionowo, 1 strona
   na arkusz, jednostronnie.

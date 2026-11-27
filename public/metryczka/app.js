@@ -20,11 +20,58 @@ const FIELDS = [
 
 const PLACE = 'Gliwice';
 const MIN_YEAR = 1900;
+const CLUBS_URL = '../2026-kluby.json';
+const CLUB_LIMIT = 50;
 
 const state = { shared: {}, selected: [] };
 let ready = false, busy = false, pdfBytes, fontBytes;
+let clubs = [];
+let clubSiedziba = null, clubError = null, refreshClubOptions = () => {};
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+
+const CLUB_DIACRITICS = { 'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z' };
+
+function normalizeText(value) {
+  return String(value ?? '')
+    .toLowerCase()
+    .replace(/[ąćęłńóśźż]/g, (ch) => CLUB_DIACRITICS[ch])
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function clubAddress(club) {
+  const street = String(club.Street ?? '').trim();
+  const house = String(club.HouseNumber ?? '').trim();
+  const flat = String(club.AppartmentNumber ?? '').trim();
+  const building = [street, house].filter(Boolean).join(' ');
+  const line = flat ? (building ? `${building}/${flat}` : flat) : building;
+  return [line, String(club.City ?? '').trim()].filter(Boolean).join(', ');
+}
+
+function searchClubs(query) {
+  const q = normalizeText(query);
+  const tokens = q.split(' ').filter(Boolean);
+  const found = [];
+  clubs.forEach((club, index) => {
+    const shortName = normalizeText(club.ShortName);
+    const fullName = normalizeText(club.FullName);
+    const haystack = `${shortName} ${fullName}`;
+    if (tokens.length && !tokens.every((token) => haystack.includes(token))) return;
+    let score = 0;
+    if (q) {
+      if (shortName.startsWith(q)) score = 0;
+      else if (shortName.includes(q)) score = 1;
+      else if (fullName.startsWith(q)) score = 2;
+      else score = 3;
+    }
+    found.push({ club, score, index });
+  });
+  found.sort((a, b) => a.score - b.score || a.index - b.index);
+  return found.slice(0, CLUB_LIMIT).map((entry) => entry.club);
+}
 
 function categoryParts(label) {
   const match = label.match(/^(.*?)\s*(\([^)]*\))\s*$/);
@@ -142,6 +189,219 @@ function renderPreview() {
   root.innerHTML = html;
 }
 
+function createClubFields() {
+  const field = document.createElement('div');
+  field.className = 'club-field';
+
+  const label = document.createElement('label');
+  label.htmlFor = 'data-KLUB';
+  label.textContent = 'Klub';
+
+  const box = document.createElement('div');
+  box.className = 'club-combobox';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.id = 'data-KLUB';
+  input.maxLength = 50;
+  input.autocomplete = 'off';
+  input.placeholder = 'Wpisz nazwę klubu…';
+  input.setAttribute('role', 'combobox');
+  input.setAttribute('aria-autocomplete', 'list');
+  input.setAttribute('aria-expanded', 'false');
+  input.setAttribute('aria-controls', 'club-options');
+  input.value = state.shared.KLUB || '';
+
+  const list = document.createElement('ul');
+  list.className = 'club-options';
+  list.id = 'club-options';
+  list.setAttribute('role', 'listbox');
+  list.hidden = true;
+
+  const error = document.createElement('small');
+  error.className = 'field-error';
+  error.setAttribute('role', 'status');
+
+  box.append(input, list);
+  field.append(label, box, error);
+  $('#shared').append(field);
+
+  const siedzibaField = document.createElement('label');
+  siedzibaField.textContent = 'Siedziba klubu';
+  const siedziba = document.createElement('input');
+  siedziba.type = 'text';
+  siedziba.id = 'data-Siedziba';
+  siedziba.maxLength = 50;
+  siedziba.readOnly = true;
+  siedziba.value = state.shared.Siedziba || '';
+  siedzibaField.append(siedziba);
+  $('#shared').append(siedzibaField);
+
+  clubSiedziba = siedziba;
+  clubError = error;
+
+  let selected = null;
+  let matches = [];
+  let active = -1;
+  let open = false;
+
+  function clearAddress() {
+    if (state.shared.Siedziba === '') return;
+    state.shared.Siedziba = '';
+    siedziba.value = '';
+  }
+
+  function closeList() {
+    open = false;
+    list.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+  }
+
+  function highlight() {
+    Array.from(list.children).forEach((element, index) => {
+      element.classList.toggle('active', index === active && element.getAttribute('role') === 'option');
+    });
+    if (active >= 0 && list.children[active]) {
+      input.setAttribute('aria-activedescendant', list.children[active].id);
+      list.children[active].scrollIntoView({ block: 'nearest' });
+    } else {
+      input.removeAttribute('aria-activedescendant');
+    }
+  }
+
+  function renderOptions() {
+    if (!open) {
+      closeList();
+      return;
+    }
+    matches = searchClubs(input.value);
+    list.textContent = '';
+    if (!matches.length) {
+      const empty = document.createElement('li');
+      empty.className = 'club-empty';
+      empty.textContent = clubs.length ? 'Brak pasujących klubów.' : 'Lista klubów jeszcze się wczytuje…';
+      list.append(empty);
+      active = -1;
+    } else {
+      matches.forEach((club, index) => {
+        const item = document.createElement('li');
+        item.id = 'club-option-' + index;
+        item.setAttribute('role', 'option');
+        item.setAttribute('aria-selected', String(club === selected));
+
+        const shortName = document.createElement('span');
+        shortName.className = 'club-short';
+        shortName.textContent = club.ShortName;
+
+        const fullName = document.createElement('span');
+        fullName.className = 'club-full';
+        fullName.textContent = club.FullName;
+
+        const place = document.createElement('span');
+        place.className = 'club-place';
+        place.textContent = clubAddress(club);
+
+        item.append(shortName, fullName, place);
+        item.onmousedown = (event) => event.preventDefault();
+        item.onclick = () => selectClub(club);
+        item.onmouseenter = () => {
+          active = index;
+          highlight();
+        };
+        list.append(item);
+      });
+      if (active >= matches.length) active = matches.length - 1;
+    }
+    list.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+    highlight();
+  }
+
+  function selectClub(club) {
+    selected = club;
+    input.value = club.ShortName;
+    state.shared.KLUB = club.ShortName;
+    state.shared.Siedziba = clubAddress(club);
+    siedziba.value = state.shared.Siedziba;
+    closeList();
+    update();
+  }
+
+  input.oninput = () => {
+    state.shared.KLUB = input.value;
+    if (!selected || input.value !== selected.ShortName) {
+      selected = null;
+      clearAddress();
+    }
+    open = true;
+    active = -1;
+    renderOptions();
+    update();
+  };
+
+  input.onfocus = () => {
+    open = true;
+    active = -1;
+    renderOptions();
+  };
+
+  input.onblur = () => {
+    setTimeout(() => {
+      if (document.activeElement !== input) closeList();
+    }, 100);
+  };
+
+  input.onkeydown = (event) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (!open) {
+        open = true;
+        renderOptions();
+      }
+      if (!matches.length) return;
+      const step = event.key === 'ArrowDown' ? 1 : -1;
+      active = active < 0
+        ? (step === 1 ? 0 : matches.length - 1)
+        : (active + step + matches.length) % matches.length;
+      highlight();
+    } else if (event.key === 'Enter' && open) {
+      if (active < 0 && matches.length === 1) active = 0;
+      if (active >= 0 && matches[active]) {
+        event.preventDefault();
+        selectClub(matches[active]);
+      }
+    } else if (event.key === 'Escape' && open) {
+      event.preventDefault();
+      closeList();
+    }
+  };
+
+  refreshClubOptions = () => {
+    if (open) renderOptions();
+  };
+}
+
+async function loadClubs() {
+  try {
+    const response = await fetch(CLUBS_URL, { cache: 'no-cache' });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const payload = await response.json();
+    const list = payload && Array.isArray(payload['soz.pzss.org.pl']) ? payload['soz.pzss.org.pl'] : [];
+    clubs = list.filter((club) => club && String(club.ShortName ?? '').trim());
+    if (!clubs.length) throw new Error('Lista klubów jest pusta.');
+    clubError.textContent = '';
+    refreshClubOptions();
+  } catch (e) {
+    console.error(e);
+    clubError.textContent = 'Nie udało się wczytać listy klubów. Wpisz klub i siedzibę ręcznie.';
+    if (clubSiedziba) {
+      clubSiedziba.readOnly = false;
+      clubSiedziba.placeholder = 'Wpisz siedzibę klubu';
+    }
+  }
+}
+
 function update() {
   const n = state.selected.length;
   const yearOk = yearValid();
@@ -180,6 +440,11 @@ async function exportPDF() {
 $('#entry').onsubmit = (e) => e.preventDefault();
 
 for (const [key, label, max] of FIELDS) {
+  if (key === 'KLUB') {
+    createClubFields();
+    continue;
+  }
+  if (key === 'Siedziba') continue;
   const wrap = document.createElement('label');
   wrap.textContent = label;
   const input = document.createElement('input');
@@ -235,6 +500,7 @@ $('#print').onclick = () => window.print();
 
 async function init() {
   update();
+  loadClubs();
   try {
     const r = await Promise.all(['formularz-gks.pdf', 'vendor/font.ttf'].map((p) => fetch(p)));
     if (r.some((x) => !x.ok)) throw Error('Nie udało się wczytać wzoru PDF.');
