@@ -11,8 +11,8 @@ public/
 ├── assets/             # logo i zdjęcie poglądowe
 ├── 404.html            # strona błędu
 ├── staticwebapp.config.json  # konfiguracja hostingu Azure
-├── 2026-kluby.json     # lista klubów do wyszukiwarki
 └── metryczka/          # aplikacja do wypełniania metryczek PDF
+    └── data/kluby.json  # lista klubów do wyszukiwarki
 ```
 
 ## Aplikacja metryczki
@@ -30,7 +30,7 @@ z informacją, czego brakuje.
 - Podgląd metryczek to czysty HTML/CSS w układzie oryginalnego formularza
   (bez grafiki w tle) — dwie metryczki na stronę A4.
 - Pole **Klub** jest wyszukiwarką klubów z listy
-  `public/2026-kluby.json` (po nazwie skróconej i pełnej).
+  `public/metryczka/data/kluby.json` (po nazwie skróconej i pełnej).
   Po wybraniu klubu pole **Siedziba klubu** uzupełnia się automatycznie
   adresem z listy.
 - **Pobierz** generuje wektorowy PDF A4 o tym samym układzie co podgląd

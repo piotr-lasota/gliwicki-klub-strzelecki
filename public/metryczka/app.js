@@ -30,7 +30,7 @@ const REQUIRED_FIELDS = ['Nazwisko', 'comb_2', 'KLUB', 'urodzenia', 'Tekst3'];
 
 const PLACE = 'Gliwice';
 const MIN_YEAR = 1900;
-const CLUBS_URL = '../2026-kluby.json';
+const CLUBS_URL = 'data/kluby.json';
 const CLUB_LIMIT = 50;
 
 /**
