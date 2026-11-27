@@ -1,6 +1,6 @@
 'use strict';
 
-/* global PDFLib, fontkit */
+/* global LAYOUT, PDFLib, fontkit */
 
 /*
  * Metryczka jest rysowana wektorowo w PDF na podstawie tego samego układu,
@@ -14,7 +14,7 @@ const PDF_PAGE_H = 297 * PDF_MM;
 const PDF_CARD_H = PDF_PAGE_H / 2;
 const PDF_PAD_X = 29.5;
 const PDF_CONTENT_W = PDF_PAGE_W - 2 * PDF_PAD_X;
-const PDF_ROW_W = 536.4;
+const PDF_ROW_W = LAYOUT.ROW_W;
 
 const PDF_INK = PDFLib.rgb(0.2, 0.2, 0.2);
 const PDF_BORDER = 0.75;
@@ -23,7 +23,7 @@ const PDF_CAP = 0.344;
 const PDF_META = {
   top: 38,
   height: 25,
-  cols: [11.6, 12.7, 8.4, 6, 11, 8.4, 15.8, 26.1]
+  cols: LAYOUT.META_COLS
 };
 const PDF_NAME_ROW_TOP = 70;
 const PDF_ROW_H = 21;
@@ -40,8 +40,6 @@ const PDF_DECL_LINE_H = 10.8;
 const PDF_DECL_H = 2 * PDF_DECL_LINE_H;
 const PDF_BOTTOM_TOP = PDF_DECL_TOP + PDF_DECL_H + 14;
 const PDF_BOTTOM_H = 28.335;
-
-const PDF_DECL_TEXT = 'Oświadczam, że stan mojego zdrowia, w dniu dzisiejszym pozwala na udział w zawodach strzeleckich oraz, że zapoznałem się z regulaminem strzelnicy i przepisami bezpieczeństwa.';
 
 function pdfRect(page, x, top, width, height, fill) {
   page.drawRectangle({
@@ -151,17 +149,17 @@ function pdfDrawPersonRows(page, cardTop, data, fonts) {
   const x = PDF_PAD_X;
 
   let top = cardTop - PDF_NAME_ROW_TOP;
-  const nameLabelW = 85.5;
-  const nameCombW = 450.9;
+  const nameLabelW = LAYOUT.LABEL_W;
+  const nameCombW = LAYOUT.NAZWISKO_COMB_W;
   pdfRect(page, x, top, PDF_ROW_W, PDF_ROW_H);
   pdfLine(page, x + nameLabelW, top, x + nameLabelW, top - PDF_ROW_H);
   pdfTextCentered(page, 'Nazwisko', x + nameLabelW / 2, top - PDF_ROW_H / 2 - PDF_CAP * 7.1, 7.1, fonts.bold);
   pdfDrawComb(page, top, x + nameLabelW, nameCombW, 27, data.Nazwisko, fonts);
 
   top = cardTop - PDF_IME_ROW_TOP;
-  const imieCombW = 334;
-  const yearLabelW = 50.1;
-  const yearCombW = 66.8;
+  const imieCombW = LAYOUT.IMIE_COMB_W;
+  const yearLabelW = LAYOUT.ROK_LABEL_W;
+  const yearCombW = LAYOUT.ROK_COMB_W;
   pdfRect(page, x, top, PDF_ROW_W, PDF_ROW_H);
   pdfLine(page, x + nameLabelW, top, x + nameLabelW, top - PDF_ROW_H);
   pdfLine(page, x + nameLabelW + imieCombW, top, x + nameLabelW + imieCombW, top - PDF_ROW_H);
@@ -175,8 +173,8 @@ function pdfDrawPersonRows(page, cardTop, data, fonts) {
   pdfDrawComb(page, top, x + nameLabelW + imieCombW + yearLabelW, yearCombW, 4, data.urodzenia, fonts);
 
   top = cardTop - PDF_CLUB_ROW_TOP;
-  const clubValueW = 200.4;
-  const siedzibaLabelW = 50.1;
+  const clubValueW = LAYOUT.KLUB_VALUE_W;
+  const siedzibaLabelW = LAYOUT.SIEDZIBA_LABEL_W;
   pdfRect(page, x, top, PDF_ROW_W, PDF_ROW_H);
   pdfLine(page, x + nameLabelW, top, x + nameLabelW, top - PDF_ROW_H);
   pdfLine(page, x + nameLabelW + clubValueW, top, x + nameLabelW + clubValueW, top - PDF_ROW_H);
@@ -188,8 +186,8 @@ function pdfDrawPersonRows(page, cardTop, data, fonts) {
   const valueBaseline = clubMiddle - PDF_CAP * 9;
   const clubMax = clubValueW - 4;
   pdfTextCentered(page, pdfFit(data.KLUB, clubMax, 9, fonts.regular), x + nameLabelW + clubValueW / 2, valueBaseline, 9, fonts.regular);
-  const siedzibaMax = 200.4 - 4;
-  const siedzibaCenter = x + nameLabelW + clubValueW + siedzibaLabelW + 200.4 / 2;
+  const siedzibaMax = clubValueW - 4;
+  const siedzibaCenter = x + nameLabelW + clubValueW + siedzibaLabelW + clubValueW / 2;
   pdfTextCentered(page, pdfFit(data.Siedziba, siedzibaMax, 9, fonts.regular), siedzibaCenter, valueBaseline, 9, fonts.regular);
 }
 
@@ -197,7 +195,7 @@ function pdfDrawScore(page, cardTop, fonts) {
   const x = PDF_PAD_X;
   const width = PDF_CONTENT_W;
   const top = cardTop - PDF_SCORE_TOP;
-  const baseCols = [13.2, 6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 6.6, 12.5, 6.5];
+  const baseCols = LAYOUT.SCORE_COLS;
   const totalPercent = baseCols.reduce((sum, value) => sum + value, 0);
   const cols = baseCols.map((value) => width * value / totalPercent);
   const boundaries = [x];
@@ -275,7 +273,7 @@ function pdfWrapText(text, maxWidth, size, font) {
 
 function pdfDrawDeclaration(page, cardTop, fonts) {
   const x = PDF_PAD_X;
-  const lines = pdfWrapText(PDF_DECL_TEXT, PDF_CONTENT_W, 8, fonts.regular);
+  const lines = pdfWrapText(LAYOUT.DECL_TEXT, PDF_CONTENT_W, 8, fonts.regular);
   lines.forEach((line, index) => {
     const lineCenter = cardTop - PDF_DECL_TOP - (index + 0.5) * PDF_DECL_LINE_H;
     pdfText(page, line, x, lineCenter - PDF_CAP * 8, 8, fonts.regular);
@@ -299,7 +297,7 @@ function pdfDrawBottom(page, cardTop, fonts, logo) {
   });
 
   const phoneBaseline = top - PDF_BOTTOM_H / 2 - PDF_CAP * 10;
-  pdfTextCentered(page, '+48 602 293 201', centers[1], phoneBaseline, 10, fonts.regular);
+  pdfTextCentered(page, LAYOUT.PHONE, centers[1], phoneBaseline, 10, fonts.regular);
 
   const sigTop = top - (PDF_BOTTOM_H - PDF_SIG_H) / 2;
   pdfDrawSignature(page, sigTop, x + 2 * (width + gap), width, fonts, 'Podpis zawodnika');

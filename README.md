@@ -8,6 +8,8 @@ Statyczna strona klubu (HTML/CSS/JS) hostowana w Azure Static Web Apps.
 public/
 ├── index.html          # strona główna
 ├── style.css
+├── fonts.css           # lokalne definicje @font-face
+├── fonts/              # Barlow Condensed i Manrope (woff2) + licencje OFL
 ├── assets/             # logo i zdjęcie poglądowe
 ├── 404.html            # strona błędu
 ├── staticwebapp.config.json  # konfiguracja hostingu Azure
@@ -16,6 +18,14 @@ public/
         ├── kluby.json   # lista klubów do wyszukiwarki
         └── zawody.json  # lista zawodów do wyboru daty
 ```
+
+## Fonty
+
+Barlow Condensed i Manrope są hostowane lokalnie w `public/fonts/` (format
+woff2, pełny zestaw znaków łącznie z polskimi). Nie ma już zależności od
+Google Fonts. Obie rodziny objęte są licencją SIL OFL 1.1 — pliki licencji
+znajdują się w `public/fonts/` i muszą pozostać w repozytorium przy
+dystrybucji fontów. Definicje `@font-face` są w `public/fonts.css`.
 
 ## Aplikacja metryczki
 
@@ -48,6 +58,11 @@ z informacją, czego brakuje.
   (np. „Gliwice, 2026.11.27”).
 - Wyniki, stanowisko, zmiana i podpisy pozostają puste do uzupełnienia
   na zawodach.
+
+Lista klubów pochodzi z eksportu SOZ PZSS i przy wczytywaniu jest
+oczyszczana z wiodących i końcowych spacji w polach tekstowych. Po każdym
+ponownym imporcie danych uruchom `python3 scripts/clean-kluby.py`, aby
+usunąć te artefakty również z pliku `kluby.json`.
 
 Dane nie są nigdzie zapisywane — po zamknięciu strony trzeba je wpisać
 ponownie. Wypełnienie metryczki nie jest zgłoszeniem na zawody.
