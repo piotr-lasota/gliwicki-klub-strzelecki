@@ -1,0 +1,5 @@
+# TODO: Podmień domenę na rzeczywisty adres produkcyjny przed wdrożeniem.
+User-agent: *
+Allow: /
+
+Sitemap: https://www.gliwickiklubstrzelecki.pl/sitemap.xml
