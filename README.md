@@ -8,6 +8,8 @@ Statyczna strona klubu (HTML/CSS/JS) hostowana w Azure Static Web Apps.
 public/
 ├── index.html          # strona główna
 ├── style.css
+├── fonts.css           # lokalne definicje @font-face
+├── fonts/              # Barlow Condensed i Manrope (woff2) + licencje OFL
 ├── assets/             # logo i zdjęcie poglądowe
 ├── 404.html            # strona błędu
 ├── staticwebapp.config.json  # konfiguracja hostingu Azure
@@ -16,6 +18,14 @@ public/
         ├── kluby.json   # lista klubów do wyszukiwarki
         └── zawody.json  # lista zawodów do wyboru daty
 ```
+
+## Fonty
+
+Barlow Condensed i Manrope są hostowane lokalnie w `public/fonts/` (format
+woff2, pełny zestaw znaków łącznie z polskimi). Nie ma już zależności od
+Google Fonts. Obie rodziny objęte są licencją SIL OFL 1.1 — pliki licencji
+znajdują się w `public/fonts/` i muszą pozostać w repozytorium przy
+dystrybucji fontów. Definicje `@font-face` są w `public/fonts.css`.
 
 ## Aplikacja metryczki
 
