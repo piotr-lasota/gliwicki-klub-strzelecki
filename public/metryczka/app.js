@@ -2,6 +2,14 @@
 
 const $ = (s) => document.querySelector(s);
 
+const sharedRoot = $('#shared');
+const choicesRoot = $('#choices');
+const summaryEl = $('#summary');
+const errorEl = $('#error');
+const statusEl = $('#status');
+const a4Button = $('#a4');
+const printButton = $('#print');
+
 const CATEGORIES = [
   ['BP', 'BIG PISTOL (BP)'],
   ['LP', 'LITTLE PISTOL (LP)'],
@@ -23,8 +31,20 @@ const MIN_YEAR = 1900;
 const CLUBS_URL = '../2026-kluby.json';
 const CLUB_LIMIT = 50;
 
+/**
+ * @typedef {Object} Club
+ * @property {string} ShortName
+ * @property {string} FullName
+ * @property {string} Street
+ * @property {string} HouseNumber
+ * @property {string} AppartmentNumber
+ * @property {string} City
+ */
+
+/** @type {{ shared: Record<string, string>, selected: string[] }} */
 const state = { shared: {}, selected: [] };
 let ready = false, busy = false, assets;
+/** @type {Club[]} */
 let clubs = [];
 let clubSiedziba = null, clubError = null, refreshClubOptions = () => {};
 
@@ -224,7 +244,7 @@ function createClubFields() {
 
   box.append(input, list);
   field.append(label, box, error);
-  $('#shared').append(field);
+  sharedRoot.append(field);
 
   const siedzibaField = document.createElement('label');
   siedzibaField.textContent = 'Siedziba klubu';
@@ -235,7 +255,7 @@ function createClubFields() {
   siedziba.readOnly = true;
   siedziba.value = state.shared.Siedziba || '';
   siedzibaField.append(siedziba);
-  $('#shared').append(siedzibaField);
+  sharedRoot.append(siedzibaField);
 
   clubSiedziba = siedziba;
   clubError = error;
@@ -382,14 +402,19 @@ function createClubFields() {
   };
 }
 
+async function fetchClubs() {
+  const response = await fetch(CLUBS_URL, { cache: 'no-cache' });
+  if (!response.ok) throw new Error('HTTP ' + response.status);
+  const payload = await response.json();
+  const list = payload && Array.isArray(payload['soz.pzss.org.pl']) ? payload['soz.pzss.org.pl'] : [];
+  const found = list.filter((club) => club && String(club.ShortName ?? '').trim());
+  if (!found.length) throw new Error('Lista klubów jest pusta.');
+  return found;
+}
+
 async function loadClubs() {
   try {
-    const response = await fetch(CLUBS_URL, { cache: 'no-cache' });
-    if (!response.ok) throw new Error('HTTP ' + response.status);
-    const payload = await response.json();
-    const list = payload && Array.isArray(payload['soz.pzss.org.pl']) ? payload['soz.pzss.org.pl'] : [];
-    clubs = list.filter((club) => club && String(club.ShortName ?? '').trim());
-    if (!clubs.length) throw new Error('Lista klubów jest pusta.');
+    clubs = await fetchClubs();
     clubError.textContent = '';
     refreshClubOptions();
   } catch (e) {
@@ -405,11 +430,11 @@ async function loadClubs() {
 function update() {
   const n = state.selected.length;
   const yearOk = yearValid();
-  $('#summary').textContent = n === 0
+  summaryEl.textContent = n === 0
     ? 'Zaznacz co najmniej jedną konkurencję.'
     : n + ' ' + (n === 1 ? 'metryczka' : 'metryczki') + ' · ' + Math.ceil(n / 2) + ' ' + (n <= 2 ? 'kartka A4' : 'kartki A4') + '.';
-  $('#a4').disabled = !ready || busy || n === 0 || !yearOk;
-  $('#print').disabled = n === 0 || !yearOk;
+  a4Button.disabled = !ready || busy || n === 0 || !yearOk;
+  printButton.disabled = n === 0 || !yearOk;
   renderPreview();
 }
 
@@ -424,14 +449,14 @@ function download(bytes, name, type) {
 async function exportPDF() {
   if (!ready || busy || !state.selected.length) return;
   busy = true; update();
-  $('#error').textContent = '';
-  $('#status').textContent = 'Przygotowywanie PDF…';
+  errorEl.textContent = '';
+  statusEl.textContent = 'Przygotowywanie PDF…';
   try {
     const bytes = await fillPrintPDF(assets, forms());
     download(bytes, 'metryczki-gks-do-druku-A4.pdf', 'application/pdf');
-    $('#status').textContent = 'Przygotowano PDF do pobrania. Otwórz zapisany plik w programie do PDF.';
+    statusEl.textContent = 'Przygotowano PDF do pobrania. Otwórz zapisany plik w programie do PDF.';
   } catch (e) {
-    $('#error').textContent = 'Nie udało się przygotować PDF: ' + e.message;
+    errorEl.textContent = 'Nie udało się przygotować PDF: ' + e.message;
   } finally {
     busy = false; update();
   }
@@ -477,7 +502,7 @@ for (const [key, label, max] of FIELDS) {
   }
   wrap.append(input);
   if (fieldError) wrap.append(fieldError);
-  $('#shared').append(wrap);
+  sharedRoot.append(wrap);
 }
 
 for (const [id, label] of CATEGORIES) {
@@ -488,29 +513,38 @@ for (const [id, label] of CATEGORIES) {
   input.id = 'choice-' + id;
   text.textContent = label;
   input.onchange = () => {
-    state.selected = CATEGORIES.filter(([key]) => document.getElementById('choice-' + key).checked).map(([key]) => key);
+    state.selected = CATEGORIES
+      .filter(([key]) => {
+        const box = document.getElementById('choice-' + key);
+        return box instanceof HTMLInputElement && box.checked;
+      })
+      .map(([key]) => key);
     update();
   };
   wrap.append(input, text);
-  $('#choices').append(wrap);
+  choicesRoot.append(wrap);
 }
 
-$('#a4').onclick = () => exportPDF();
-$('#print').onclick = () => window.print();
+a4Button.onclick = () => exportPDF();
+printButton.onclick = () => window.print();
+
+async function fetchAssets() {
+  const r = await Promise.all(['vendor/LiberationSans-Regular.ttf', 'vendor/LiberationSans-Bold.ttf', '../assets/logo.jpg'].map((p) => fetch(p)));
+  if (r.some((x) => !x.ok)) throw Error('Nie udało się wczytać czcionek.');
+  const [regular, bold, logo] = await Promise.all(r.map((x) => x.arrayBuffer()));
+  return { regular, bold, logo };
+}
 
 async function init() {
   update();
-  loadClubs();
+  void loadClubs();
   try {
-    const r = await Promise.all(['vendor/LiberationSans-Regular.ttf', 'vendor/LiberationSans-Bold.ttf', '../assets/logo.jpg'].map((p) => fetch(p)));
-    if (r.some((x) => !x.ok)) throw Error('Nie udało się wczytać czcionek.');
-    const [regular, bold, logo] = await Promise.all(r.map((x) => x.arrayBuffer()));
-    assets = { regular, bold, logo };
+    assets = await fetchAssets();
     ready = true;
     update();
   } catch (e) {
-    $('#error').textContent = e.message + ' Odśwież stronę.';
+    errorEl.textContent = e.message + ' Odśwież stronę.';
   }
 }
 
-init();
+void init();

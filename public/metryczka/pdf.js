@@ -1,5 +1,7 @@
 'use strict';
 
+/* global PDFLib, fontkit */
+
 /*
  * Metryczka jest rysowana wektorowo w PDF na podstawie tego samego układu,
  * który widać w podglądzie HTML. Dzięki temu pobierany plik nie zawiera

@@ -415,7 +415,7 @@
       "Street": "Pasymska",
       "HouseNumber": "2",
       "AppartmentNumber": "",
-      "www": "http://www.sksbielik.pl",
+      "www": "https://www.sksbielik.pl",
       "WZSS": "WZSS Olsztyn"
     },
     {
@@ -569,7 +569,7 @@
       "Street": "Dąbrowskiego",
       "HouseNumber": "8",
       "AppartmentNumber": "8",
-      "www": "http://www.brass.org.pl/",
+      "www": "https://www.brass.org.pl/",
       "WZSS": "WZSS Ziel.Góra"
     },
     {
@@ -1196,7 +1196,7 @@
       "Street": "Wesółka",
       "HouseNumber": "4D",
       "AppartmentNumber": "",
-      "www": "http://www.feniks.twardogora.org.pl/",
+      "www": "https://www.feniks.twardogora.org.pl/",
       "WZSS": "WZSS Wrocław"
     },
     {
@@ -1229,7 +1229,7 @@
       "Street": "Junaków",
       "HouseNumber": "2",
       "AppartmentNumber": "",
-      "www": "http://www.strzelwksel.pl/",
+      "www": "https://www.strzelwksel.pl/",
       "WZSS": "WZSS Olsztyn"
     },
     {
@@ -1317,7 +1317,7 @@
       "Street": "Jana III Sobieskiego",
       "HouseNumber": "9",
       "AppartmentNumber": "208",
-      "www": "http://ksgarda.pl",
+      "www": "https://ksgarda.pl",
       "WZSS": "WZSS Olsztyn"
     },
     {
@@ -1493,7 +1493,7 @@
       "Street": "Zamiejska",
       "HouseNumber": "30",
       "AppartmentNumber": "",
-      "www": "http://ksgryfslupski.pl/",
+      "www": "https://ksgryfslupski.pl/",
       "WZSS": "WZSS Gdańsk"
     },
     {
@@ -2769,7 +2769,7 @@
       "Street": "Bolesława Prusa",
       "HouseNumber": "20A",
       "AppartmentNumber": "",
-      "www": "http://skslegion.pl/",
+      "www": "https://skslegion.pl/",
       "WZSS": "WZSS Szczecin"
     },
     {
@@ -2956,7 +2956,7 @@
       "Street": "Szkocja",
       "HouseNumber": "25",
       "AppartmentNumber": null,
-      "www": "http://marksman.pl",
+      "www": "https://marksman.pl",
       "WZSS": "WZSS Białystok"
     },
     {
@@ -3550,7 +3550,7 @@
       "Street": "Chopina",
       "HouseNumber": "3",
       "AppartmentNumber": null,
-      "www": "http://www.strzelnica-bogatynia.pl",
+      "www": "https://www.strzelnica-bogatynia.pl",
       "WZSS": "WZSS Wrocław"
     },
     {
@@ -3671,7 +3671,7 @@
       "Street": "Harcerska",
       "HouseNumber": "7",
       "AppartmentNumber": null,
-      "www": "http://grot-plock.pl",
+      "www": "https://grot-plock.pl",
       "WZSS": "WZSS Warszawa"
     },
     {
@@ -4474,7 +4474,7 @@
       "Street": "Rynek",
       "HouseNumber": "4",
       "AppartmentNumber": null,
-      "www": "http://wsssten.pl/",
+      "www": "https://wsssten.pl/",
       "WZSS": "WZSS Lublin"
     },
     {
@@ -4518,7 +4518,7 @@
       "Street": "Ks. Jerzego Popiełuszki",
       "HouseNumber": "25",
       "AppartmentNumber": "",
-      "www": "http://strzelcybytow.pl",
+      "www": "https://strzelcybytow.pl",
       "WZSS": "WZSS Gdańsk"
     },
     {
@@ -4694,7 +4694,7 @@
       "Street": "Walecznych",
       "HouseNumber": "38",
       "AppartmentNumber": "",
-      "www": "http://sudeckawataha.pl",
+      "www": "https://sudeckawataha.pl",
       "WZSS": "WZSS Wrocław"
     },
     {
@@ -4881,7 +4881,7 @@
       "Street": "Listopadowa",
       "HouseNumber": "32",
       "AppartmentNumber": "",
-      "www": "http://wkstechnik.pl/",
+      "www": "https://wkstechnik.pl/",
       "WZSS": "WZSS Lublin"
     },
     {
@@ -4892,7 +4892,7 @@
       "Street": "Matejki",
       "HouseNumber": "6",
       "AppartmentNumber": "",
-      "www": "http://www.tstemida-zabrze.pl/",
+      "www": "https://www.tstemida-zabrze.pl/",
       "WZSS": "WZSS Katowice"
     },
     {
@@ -5024,7 +5024,7 @@
       "Street": "Słowackiego",
       "HouseNumber": "40",
       "AppartmentNumber": "",
-      "www": "http://www.lok.przemysl.pl",
+      "www": "https://www.lok.przemysl.pl",
       "WZSS": "WZSS Rzeszów"
     },
     {
@@ -5156,7 +5156,7 @@
       "Street": "Kazimierza Pułaskiego",
       "HouseNumber": "23",
       "AppartmentNumber": "",
-      "www": "http://vis-miedzyrzec.com.pl",
+      "www": "https://vis-miedzyrzec.com.pl",
       "WZSS": "WZSS Lublin"
     },
     {
@@ -5541,7 +5541,7 @@
       "Street": "Porzeczkowa",
       "HouseNumber": "35",
       "AppartmentNumber": null,
-      "www": "http://zbrojownia.org/",
+      "www": "https://zbrojownia.org/",
       "WZSS": "WZSS Poznań"
     },
     {
