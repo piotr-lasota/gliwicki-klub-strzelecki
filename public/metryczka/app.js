@@ -208,8 +208,12 @@ function comb(key, cols) {
   return `<div class="cell val comb">${cells}</div>`;
 }
 
+function cols(values, unit) {
+  return values.map((value) => value + unit).join(' ');
+}
+
 function scoreTable() {
-  const cols = `<colgroup><col class="c-lab">${'<col class="c-n">'.repeat(10)}<col class="c-suma"><col class="c-uw"></colgroup>`;
+  const colsHTML = `<colgroup>${LAYOUT.SCORE_COLS.map((value) => `<col style="width:${value}%">`).join('')}</colgroup>`;
   const head = `<thead><tr>
       <th class="diag"><span>Strzały</span><span>Serie</span></th>
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<th>${n}</th>`).join('')}
@@ -218,7 +222,7 @@ function scoreTable() {
   const rows = [1, 2, 3].map((r) => `<tr>
       <th class="rl">${r}</th>${'<td></td>'.repeat(10)}<td></td><td></td>
     </tr>`).join('');
-  return `<table class="score">${cols}${head}<tbody>${rows}</tbody></table>`;
+  return `<table class="score">${colsHTML}${head}<tbody>${rows}</tbody></table>`;
 }
 
 function cardHTML(label) {
@@ -226,7 +230,7 @@ function cardHTML(label) {
   return `<article class="metryczka">
     <h2 class="mtitle">METRYCZKA STRZELANIA</h2>
 
-    <div class="mrow meta">
+    <div class="mrow meta" style="grid-template-columns:${cols(LAYOUT.META_COLS, '%')}">
       <div class="cell lab">Konkurencja</div>
       <div class="cell val konk"><span>${esc(catName)}</span><span>${esc(catCode)}</span></div>
       <div class="cell lab">Zmiana</div>
@@ -237,19 +241,19 @@ function cardHTML(label) {
       <div class="cell val">${esc(competitionDate())}</div>
     </div>
 
-    <div class="mrow r-nazw">
+    <div class="mrow r-nazw" style="grid-template-columns:${cols([LAYOUT.LABEL_W, LAYOUT.NAZWISKO_COMB_W], 'pt')}">
       <div class="cell lab">Nazwisko</div>
       ${comb('Nazwisko', 27)}
     </div>
 
-    <div class="mrow r-imie">
+    <div class="mrow r-imie" style="grid-template-columns:${cols([LAYOUT.LABEL_W, LAYOUT.IMIE_COMB_W, LAYOUT.ROK_LABEL_W, LAYOUT.ROK_COMB_W], 'pt')}">
       <div class="cell lab">Imię</div>
       ${comb('comb_2', 20)}
       <div class="cell lab">Rok<br>urodzenia</div>
       ${comb('urodzenia', 4)}
     </div>
 
-    <div class="mrow r-klub">
+    <div class="mrow r-klub" style="grid-template-columns:${cols([LAYOUT.LABEL_W, LAYOUT.KLUB_VALUE_W, LAYOUT.SIEDZIBA_LABEL_W, LAYOUT.KLUB_VALUE_W], 'pt')}">
       <div class="cell lab">KLUB</div>
       <div class="cell val">${esc(state.shared.KLUB)}</div>
       <div class="cell lab">Siedziba</div>
@@ -265,13 +269,12 @@ function cardHTML(label) {
     </div>
 
     <div class="decl">
-      <div class="osw">Oświadczam, że stan mojego zdrowia, w dniu dzisiejszym pozwala na udział
-        w zawodach strzeleckich oraz, że zapoznałem się z regulaminem strzelnicy i przepisami bezpieczeństwa.</div>
+      <div class="osw">${esc(LAYOUT.DECL_TEXT)}</div>
     </div>
 
     <div class="bottom">
       <div class="bcell"><img class="logo" src="../assets/logo.jpg" alt="Gliwicki Klub Strzelecki"></div>
-      <div class="bcell"><span class="phone">+48 602 293 201</span></div>
+      <div class="bcell"><span class="phone">${esc(LAYOUT.PHONE)}</span></div>
       <div class="bcell"><div class="sig"><div class="line"></div><span class="lbl">Podpis zawodnika</span></div></div>
     </div>
   </article>`;
