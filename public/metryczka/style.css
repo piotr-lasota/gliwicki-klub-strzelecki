@@ -571,27 +571,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .meta {
-    grid-template-columns:11.6% 12.7% 8.4% 6% 11% 8.4% 15.8% 26.1%;
     min-height: 25pt;
     margin-bottom: 7pt
 }
 
 .r-nazw {
-    width: 536.4pt;
-    grid-template-columns:85.5pt 450.9pt;
     min-height: 21pt;
     margin-top: 0
 }
 
 .r-imie {
-    width: 536.4pt;
-    grid-template-columns:85.5pt 334pt 50.1pt 66.8pt;
     min-height: 21pt
 }
 
 .r-klub {
-    width: 536.4pt;
-    grid-template-columns:85.5pt 200.4pt 50.1pt 200.4pt;
     min-height: 21pt
 }
 
@@ -679,22 +672,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-weight: 700
 }
 
-.score col.c-lab {
-    width: 13.2%
-}
-
-.score col.c-n {
-    width: 6.6%
-}
-
-.score col.c-suma {
-    width: 12.5%
-}
-
-.score col.c-uw {
-    width: 6.5%
-}
-
 .sigs {
     display: grid;
     grid-template-columns:1fr 1fr 1fr;
@@ -774,10 +751,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     body {
         background: #fff;
         margin: 0
-    }
-
-    main {
-        display: none !important
     }
 
     .sheets {
