@@ -778,10 +778,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         margin: 0
     }
 
-    main {
-        display: none !important
-    }
-
     .sheets {
         display: block;
         padding: 0;
