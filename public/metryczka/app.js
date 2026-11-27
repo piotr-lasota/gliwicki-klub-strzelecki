@@ -24,7 +24,7 @@ const CLUBS_URL = '../2026-kluby.json';
 const CLUB_LIMIT = 50;
 
 const state = { shared: {}, selected: [] };
-let ready = false, busy = false, pdfBytes, fontBytes;
+let ready = false, busy = false, assets;
 let clubs = [];
 let clubSiedziba = null, clubError = null, refreshClubOptions = () => {};
 
@@ -427,7 +427,7 @@ async function exportPDF() {
   $('#error').textContent = '';
   $('#status').textContent = 'Przygotowywanie PDF…';
   try {
-    const bytes = await fillPrintPDF(pdfBytes, fontBytes, forms());
+    const bytes = await fillPrintPDF(assets, forms());
     download(bytes, 'metryczki-gks-do-druku-A4.pdf', 'application/pdf');
     $('#status').textContent = 'Przygotowano PDF do pobrania. Otwórz zapisany plik w programie do PDF.';
   } catch (e) {
@@ -502,9 +502,10 @@ async function init() {
   update();
   loadClubs();
   try {
-    const r = await Promise.all(['formularz-gks.pdf', 'vendor/font.ttf'].map((p) => fetch(p)));
-    if (r.some((x) => !x.ok)) throw Error('Nie udało się wczytać wzoru PDF.');
-    [pdfBytes, fontBytes] = await Promise.all(r.map((x) => x.arrayBuffer()));
+    const r = await Promise.all(['vendor/LiberationSans-Regular.ttf', 'vendor/LiberationSans-Bold.ttf', '../assets/logo.jpg'].map((p) => fetch(p)));
+    if (r.some((x) => !x.ok)) throw Error('Nie udało się wczytać czcionek.');
+    const [regular, bold, logo] = await Promise.all(r.map((x) => x.arrayBuffer()));
+    assets = { regular, bold, logo };
     ready = true;
     update();
   } catch (e) {

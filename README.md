@@ -27,9 +27,9 @@ LITTLE PISTOL (LP), SMALL RIFLE (SR) i SHOTGUN.
   `public/2026-kluby.json` (po nazwie skróconej i pełnej).
   Po wybraniu klubu pole **Siedziba klubu** uzupełnia się automatycznie
   adresem z listy.
-- **Pobierz** generuje PDF z oryginalnego formularza,
-  po dwie metryczki na stronie A4. Drukować: A4, pionowo, 1 strona
-  na arkusz, jednostronnie.
+- **Pobierz** generuje wektorowy PDF A4 o tym samym układzie co podgląd
+  (bez skanu formularza i grafiki tła), po dwie metryczki na stronie A4.
+  Drukować: A4, pionowo, 1 strona na arkusz, jednostronnie.
 - **Drukuj** drukuje podgląd HTML (2 metryczki na A4).
 - Data zawodów jest uzupełniana miejscowością Gliwice
   (np. „Gliwice, 2026.11.27”).
