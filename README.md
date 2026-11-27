@@ -49,6 +49,11 @@ z informacją, czego brakuje.
 - Wyniki, stanowisko, zmiana i podpisy pozostają puste do uzupełnienia
   na zawodach.
 
+Lista klubów pochodzi z eksportu SOZ PZSS i przy wczytywaniu jest
+oczyszczana z wiodących i końcowych spacji w polach tekstowych. Po każdym
+ponownym imporcie danych uruchom `python3 scripts/clean-kluby.py`, aby
+usunąć te artefakty również z pliku `kluby.json`.
+
 Dane nie są nigdzie zapisywane — po zamknięciu strony trzeba je wpisać
 ponownie. Wypełnienie metryczki nie jest zgłoszeniem na zawody.
 

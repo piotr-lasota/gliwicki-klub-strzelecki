@@ -694,12 +694,22 @@ function createEventPicker() {
   };
 }
 
+function sanitizeClub(club) {
+  const out = { ...club };
+  for (const key of ['ShortName', 'FullName', 'Street', 'HouseNumber', 'AppartmentNumber', 'City']) {
+    if (typeof out[key] === 'string') out[key] = out[key].trim();
+  }
+  return out;
+}
+
 async function fetchClubs() {
   const response = await fetch(CLUBS_URL, { cache: 'no-cache' });
   if (!response.ok) throw new Error('HTTP ' + response.status);
   const payload = await response.json();
   const list = payload && Array.isArray(payload['soz.pzss.org.pl']) ? payload['soz.pzss.org.pl'] : [];
-  const found = list.filter((club) => club && String(club.ShortName ?? '').trim());
+  const found = list
+    .filter((club) => club && String(club.ShortName ?? '').trim())
+    .map(sanitizeClub);
   if (!found.length) throw new Error('Lista klubów jest pusta.');
   return found;
 }
