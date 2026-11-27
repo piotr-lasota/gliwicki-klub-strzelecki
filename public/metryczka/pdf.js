@@ -23,7 +23,7 @@ const PDF_CAP = 0.344;
 const PDF_META = {
   top: 38,
   height: 25,
-  cols: [11.6, 12.7, 8.4, 6, 11, 8.4, 15.8, 26.1],
+  cols: [11.6, 12.7, 8.4, 6, 11, 8.4, 15.8, 26.1]
 };
 const PDF_NAME_ROW_TOP = 70;
 const PDF_ROW_H = 21;
@@ -51,7 +51,7 @@ function pdfRect(page, x, top, width, height, fill) {
     height,
     color: fill,
     borderColor: PDF_INK,
-    borderWidth: PDF_BORDER,
+    borderWidth: PDF_BORDER
   });
 }
 
@@ -60,7 +60,7 @@ function pdfLine(page, x1, y1, x2, y2) {
     start: { x: x1, y: y1 },
     end: { x: x2, y: y2 },
     thickness: PDF_BORDER,
-    color: PDF_INK,
+    color: PDF_INK
   });
 }
 
@@ -295,7 +295,7 @@ function pdfDrawBottom(page, cardTop, fonts, logo) {
     x: centers[0] - logoWidth / 2,
     y: top - logoHeight,
     width: logoWidth,
-    height: logoHeight,
+    height: logoHeight
   });
 
   const phoneBaseline = top - PDF_BOTTOM_H / 2 - PDF_CAP * 10;
@@ -323,7 +323,7 @@ async function fillPrintPDF(assets, forms) {
   doc.registerFontkit(fontkit);
   const fonts = {
     regular: await doc.embedFont(assets.regular, { subset: true }),
-    bold: await doc.embedFont(assets.bold, { subset: true }),
+    bold: await doc.embedFont(assets.bold, { subset: true })
   };
   const logo = await doc.embedJpg(assets.logo);
 

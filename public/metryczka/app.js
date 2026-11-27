@@ -14,7 +14,7 @@ const CATEGORIES = [
   ['BP', 'BIG PISTOL (BP)'],
   ['LP', 'LITTLE PISTOL (LP)'],
   ['SR', 'SMALL RIFLE (SR)'],
-  ['SHOTGUN', 'SHOTGUN (SG)'],
+  ['SHOTGUN', 'SHOTGUN (SG)']
 ];
 
 const FIELDS = [
@@ -23,7 +23,7 @@ const FIELDS = [
   ['KLUB', 'Klub', 50],
   ['Siedziba', 'Siedziba klubu', 50],
   ['urodzenia', 'Rok urodzenia', 4],
-  ['Tekst3', 'Data zawodów', 10],
+  ['Tekst3', 'Data zawodów', 10]
 ];
 
 const REQUIRED_FIELDS = ['Nazwisko', 'comb_2', 'KLUB', 'urodzenia', 'Tekst3'];
@@ -59,8 +59,10 @@ let ready = false, busy = false, assets;
 let clubs = [];
 /** @type {Event[]} */
 let events = [];
-let clubSiedziba = null, clubError = null, refreshClubOptions = () => {};
-let refreshEventOptions = () => {}, eventsError = '';
+let clubSiedziba = null, clubError = null, refreshClubOptions = () => {
+};
+let refreshEventOptions = () => {
+}, eventsError = '';
 
 /** @type {Map<string, { key: string, input: HTMLInputElement, error: HTMLElement, required: boolean, touched: boolean }>} */
 const fieldStates = new Map();
@@ -94,7 +96,12 @@ function refreshFieldErrors() {
   }
 }
 
-const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;'
+}[ch]));
 
 const CLUB_DIACRITICS = { 'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z' };
 
@@ -205,10 +212,10 @@ function scoreTable() {
   const cols = `<colgroup><col class="c-lab">${'<col class="c-n">'.repeat(10)}<col class="c-suma"><col class="c-uw"></colgroup>`;
   const head = `<thead><tr>
       <th class="diag"><span>Strzały</span><span>Serie</span></th>
-      ${[1,2,3,4,5,6,7,8,9,10].map((n) => `<th>${n}</th>`).join('')}
+      ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `<th>${n}</th>`).join('')}
       <th>Suma</th><th>Uwagi</th>
     </tr></thead>`;
-  const rows = [1,2,3].map((r) => `<tr>
+  const rows = [1, 2, 3].map((r) => `<tr>
       <th class="rl">${r}</th>${'<td></td>'.repeat(10)}<td></td><td></td>
     </tr>`).join('');
   return `<table class="score">${cols}${head}<tbody>${rows}</tbody></table>`;
@@ -765,14 +772,18 @@ function update() {
 function download(bytes, name, type) {
   const url = URL.createObjectURL(new Blob([bytes], { type }));
   const a = document.createElement('a');
-  a.href = url; a.download = name;
-  document.body.append(a); a.click(); a.remove();
+  a.href = url;
+  a.download = name;
+  document.body.append(a);
+  a.click();
+  a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
 
 async function exportPDF() {
   if (!ready || busy || !isComplete()) return;
-  busy = true; update();
+  busy = true;
+  update();
   errorEl.textContent = '';
   statusEl.textContent = 'Przygotowywanie PDF…';
   try {
@@ -782,7 +793,8 @@ async function exportPDF() {
   } catch (e) {
     errorEl.textContent = 'Nie udało się przygotować PDF: ' + e.message;
   } finally {
-    busy = false; update();
+    busy = false;
+    update();
   }
 }
 
@@ -854,7 +866,9 @@ for (const [id, label] of CATEGORIES) {
 }
 
 a4Button.onclick = () => exportPDF();
-printButton.onclick = () => { if (isComplete()) window.print(); };
+printButton.onclick = () => {
+  if (isComplete()) window.print();
+};
 
 async function fetchAssets() {
   const r = await Promise.all(['vendor/LiberationSans-Regular.ttf', 'vendor/LiberationSans-Bold.ttf', '../assets/logo.jpg'].map((p) => fetch(p)));

@@ -1,29 +1,46 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Metryczki na zawody — GKS</title>
-<link rel="stylesheet" href="style.css?v=theme3">
+  <meta charset="utf-8">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <title>Metryczki na zawody — GKS</title>
+  <link href="style.css?v=theme3" rel="stylesheet">
 </head>
 <body>
 <main class="noprint">
   <header class="toolbar">
-    <a href="../" aria-label="GKS — strona główna"><img class="logo" src="../assets/logo.jpg" alt="Gliwicki Klub Strzelecki"></a>
+    <a aria-label="GKS — strona główna" href="../"><img alt="Gliwicki Klub Strzelecki" class="logo"
+                                                        src="../assets/logo.jpg"></a>
     <a class="back" href="../">Strona główna <span aria-hidden="true">↗</span></a>
   </header>
   <p class="eyebrow"><i></i> ZAWODY / METRYCZKA</p>
   <h1>Generator metryczek<br><em>na zawody</em></h1>
-  <p class="intro">Wpisz dane zawodnika raz, zaznacz konkurencje i pobierz gotowe metryczki — dwie na stronę A4, do wydruku lub jako PDF.</p>
+  <p class="intro">Wpisz dane zawodnika raz, zaznacz konkurencje i pobierz gotowe metryczki — dwie na stronę A4, do
+    wydruku lub jako PDF.</p>
   <form id="entry">
-    <section class="panel"><h2>1. Dane zawodnika i zawodów</h2><div id="shared" class="data-grid"></div></section>
-    <section class="panel"><h2>2. Wybierz konkurencje</h2><div id="choices" class="choices"></div></section>
-    <section class="panel"><h2>3. Pobierz metryczki</h2><p id="summary" aria-live="polite"></p><div class="actions"><span class="action"><button id="a4" type="button" class="primary" aria-describedby="summary" disabled>Pobierz</button></span><span class="action"><button id="print" type="button" aria-describedby="summary">Drukuj</button></span></div><p class="hint">PDF A4 zawiera po dwie metryczki na kartce. Drukuj: <strong>A4, pionowo, 1 strona na arkusz, jednostronnie</strong>. Wyniki, stanowisko, zmiana i podpisy pozostają puste do uzupełnienia na zawodach.</p></section>
+    <section class="panel"><h2>1. Dane zawodnika i zawodów</h2>
+      <div class="data-grid" id="shared"></div>
+    </section>
+    <section class="panel"><h2>2. Wybierz konkurencje</h2>
+      <div class="choices" id="choices"></div>
+    </section>
+    <section class="panel"><h2>3. Pobierz metryczki</h2>
+      <p aria-live="polite" id="summary"></p>
+      <div class="actions"><span class="action"><button aria-describedby="summary" class="primary" disabled id="a4"
+                                                        type="button">Pobierz</button></span><span class="action"><button
+        aria-describedby="summary" id="print" type="button">Drukuj</button></span></div>
+      <p class="hint">PDF A4 zawiera po dwie metryczki na kartce. Drukuj: <strong>A4, pionowo, 1 strona na arkusz,
+        jednostronnie</strong>. Wyniki, stanowisko, zmiana i podpisy pozostają puste do uzupełnienia na zawodach.</p>
+    </section>
   </form>
-  <p id="error" role="alert"></p><p id="status" role="status"></p>
+  <p id="error" role="alert"></p>
+  <p id="status" role="status"></p>
   <p class="hint">Wypełnienie metryczki nie jest zgłoszeniem na zawody.</p>
 </main>
-<div id="preview" class="sheets" aria-label="Podgląd metryczek"></div>
-<script src="vendor/pdf-lib.js"></script><script src="vendor/fontkit.js"></script><script src="pdf.js?v=vector5"></script><script src="app.js?v=preview4"></script>
+<div aria-label="Podgląd metryczek" class="sheets" id="preview"></div>
+<script src="vendor/pdf-lib.js"></script>
+<script src="vendor/fontkit.js"></script>
+<script src="pdf.js?v=vector5"></script>
+<script src="app.js?v=preview4"></script>
 </body>
 </html>
