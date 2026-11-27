@@ -1,12 +1,7 @@
 'use strict';
 
-/* ============ konfiguracja ============ */
-
 const $ = (s) => document.querySelector(s);
 
-const KEY = 'gks-precompetition-v4';
-
-/* kolejność zgodna z oryginalnym formularzem / example.pdf */
 const CATEGORIES = [
   ['BP', 'BIG PISTOL (BP)'],
   ['LP', 'LITTLE PISTOL (LP)'],
@@ -20,41 +15,40 @@ const FIELDS = [
   ['KLUB', 'Klub', 50],
   ['Siedziba', 'Siedziba klubu', 50],
   ['urodzenia', 'Rok urodzenia', 4],
-  ['Tekst3', 'Miejsce i data zawodów', 60],
+  ['Tekst3', 'Data zawodów', 10],
 ];
 
-let state = { version: 4, shared: {}, selected: [] };
+const PLACE = 'Gliwice';
+const MIN_YEAR = 1900;
+
+const state = { shared: {}, selected: [] };
 let ready = false, busy = false, pdfBytes, fontBytes;
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 
-/* ============ dane ============ */
+function categoryParts(label) {
+  const match = label.match(/^(.*?)\s*(\([^)]*\))\s*$/);
+  return match ? [match[1], match[2]] : [label, ''];
+}
 
-function valid(v) {
-  return v?.version === 4
-    && v.shared && typeof v.shared === 'object' && !Array.isArray(v.shared)
-    && Object.entries(v.shared).every(([k, s]) => FIELDS.some(([key, , max]) => key === k && typeof s === 'string' && s.length <= max))
-    && Array.isArray(v.selected) && v.selected.length <= 4
-    && new Set(v.selected).size === v.selected.length
-    && v.selected.every((k) => CATEGORIES.some(([id]) => id === k));
+function competitionDate() {
+  if (!state.shared.Tekst3) return PLACE;
+  return `${PLACE}, ${state.shared.Tekst3.replace(/-/g, '.')}`;
 }
 
 function forms() {
   return CATEGORIES
     .filter(([id]) => state.selected.includes(id))
-    .map(([, label]) => ({ ...state.shared, Tekst1: label }));
+    .map(([, label]) => {
+      const [name, code] = categoryParts(label);
+      return { ...state.shared, Tekst1: code ? `${name}\n${code}` : name, Tekst3: competitionDate() };
+    });
 }
 
-function save() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(state));
-    $('#status').textContent = 'Zapisano w tej przeglądarce.';
-  } catch {
-    $('#status').textContent = 'Zapis lokalny niedostępny. Możesz wyeksportować dane.';
-  }
+function yearValid() {
+  const value = state.shared.urodzenia || '';
+  return value === '' || (/^\d{4}$/.test(value) && Number(value) >= MIN_YEAR);
 }
-
-/* ============ podgląd metryczki (HTML — układ wg oryginalnego formularza) ============ */
 
 function comb(key, cols) {
   const chars = (state.shared[key] || '').trim().slice(0, cols).split('');
@@ -77,10 +71,7 @@ function scoreTable() {
 }
 
 function cardHTML(label) {
-  const s = state.shared;
-  const match = label.match(/^(.*?)\s*(\([^)]*\))\s*$/);
-  const catName = match ? match[1] : label;
-  const catCode = match ? match[2] : '';
+  const [catName, catCode] = categoryParts(label);
   return `<article class="metryczka">
     <h2 class="mtitle">METRYCZKA STRZELANIA</h2>
 
@@ -91,8 +82,8 @@ function cardHTML(label) {
       <div class="cell val"></div>
       <div class="cell lab">Stanowisko</div>
       <div class="cell val"></div>
-      <div class="cell lab">Miejsce<br>i data zawodów</div>
-      <div class="cell val">${esc(s.Tekst3)}</div>
+      <div class="cell lab">Data zawodów</div>
+      <div class="cell val">${esc(competitionDate())}</div>
     </div>
 
     <div class="mrow r-nazw">
@@ -109,9 +100,9 @@ function cardHTML(label) {
 
     <div class="mrow r-klub">
       <div class="cell lab">KLUB</div>
-      <div class="cell val">${esc(s.KLUB)}</div>
+      <div class="cell val">${esc(state.shared.KLUB)}</div>
       <div class="cell lab">Siedziba</div>
-      <div class="cell val">${esc(s.Siedziba)}</div>
+      <div class="cell val">${esc(state.shared.Siedziba)}</div>
     </div>
 
     ${scoreTable()}
@@ -135,12 +126,11 @@ function cardHTML(label) {
   </article>`;
 }
 
-/* dwie metryczki na arkusz A4 */
 function renderPreview() {
   const list = forms();
   const root = $('#preview');
   if (!list.length) {
-    root.innerHTML = '<p class="empty-msg">Zaznacz przynajmniej jedną konkurencję, aby zobaczyć podgląd metryczek.</p>';
+    root.innerHTML = '';
     return;
   }
   let html = '';
@@ -152,22 +142,15 @@ function renderPreview() {
   root.innerHTML = html;
 }
 
-/* ============ aktualizacja ============ */
-
 function update() {
   const n = state.selected.length;
+  const yearOk = yearValid();
   $('#summary').textContent = n === 0
     ? 'Zaznacz co najmniej jedną konkurencję.'
     : n + ' ' + (n === 1 ? 'metryczka' : 'metryczki') + ' · ' + Math.ceil(n / 2) + ' ' + (n <= 2 ? 'kartka A4' : 'kartki A4') + '.';
-  $('#a4').disabled = !ready || busy || n === 0;
-  $('#print').disabled = n === 0;
+  $('#a4').disabled = !ready || busy || n === 0 || !yearOk;
+  $('#print').disabled = n === 0 || !yearOk;
   renderPreview();
-}
-
-function render() {
-  for (const [k] of FIELDS) document.getElementById('data-' + k).value = state.shared[k] || '';
-  for (const [id] of CATEGORIES) document.getElementById('choice-' + id).checked = state.selected.includes(id);
-  update();
 }
 
 function download(bytes, name, type) {
@@ -177,8 +160,6 @@ function download(bytes, name, type) {
   document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
-
-/* ============ PDF (oryginalny formularz, 2 metryczki na A4 — jak data/example.pdf) ============ */
 
 async function exportPDF() {
   if (!ready || busy || !state.selected.length) return;
@@ -196,8 +177,6 @@ async function exportPDF() {
   }
 }
 
-/* ============ zdarzenia ============ */
-
 $('#entry').onsubmit = (e) => e.preventDefault();
 
 for (const [key, label, max] of FIELDS) {
@@ -205,11 +184,34 @@ for (const [key, label, max] of FIELDS) {
   wrap.textContent = label;
   const input = document.createElement('input');
   input.id = 'data-' + key;
-  input.maxLength = max;
-  input.type = 'text';
-  if (key === 'urodzenia') input.inputMode = 'numeric';
-  input.oninput = () => { state.shared[key] = input.value; save(); renderPreview(); };
+  input.type = key === 'Tekst3' ? 'date' : 'text';
+  if (key !== 'Tekst3') input.maxLength = max;
+  let fieldError;
+  if (key === 'urodzenia') {
+    input.inputMode = 'numeric';
+    input.pattern = '[0-9]*';
+    input.autocomplete = 'bday-year';
+    fieldError = document.createElement('small');
+    fieldError.className = 'field-error';
+    fieldError.setAttribute('role', 'alert');
+  }
+  input.oninput = () => {
+    if (key === 'urodzenia') input.value = input.value.replace(/\D/g, '').slice(0, max);
+    state.shared[key] = input.value;
+    if (fieldError) {
+      fieldError.textContent = input.value.length === max && !yearValid()
+        ? 'Podaj czterocyfrowy rok (1900 lub później).'
+        : '';
+    }
+    update();
+  };
+  if (fieldError) {
+    input.onblur = () => {
+      fieldError.textContent = input.value && !yearValid() ? 'Podaj czterocyfrowy rok (1900 lub później).' : '';
+    };
+  }
   wrap.append(input);
+  if (fieldError) wrap.append(fieldError);
   $('#shared').append(wrap);
 }
 
@@ -222,7 +224,7 @@ for (const [id, label] of CATEGORIES) {
   text.textContent = label;
   input.onchange = () => {
     state.selected = CATEGORIES.filter(([key]) => document.getElementById('choice-' + key).checked).map(([key]) => key);
-    update(); save();
+    update();
   };
   wrap.append(input, text);
   $('#choices').append(wrap);
@@ -231,51 +233,8 @@ for (const [id, label] of CATEGORIES) {
 $('#a4').onclick = () => exportPDF();
 $('#print').onclick = () => window.print();
 
-$('#reset').onclick = () => {
-  if (!confirm('Wyczyścić dane zawodnika i wybór konkurencji?')) return;
-  state = { version: 4, shared: {}, selected: [] };
-  for (const key of [KEY, 'gks-multi-form-v3', 'gks-original-form-v2', 'gks-metryczka-v1']) {
-    try { localStorage.removeItem(key); } catch { /* ignore */ }
-  }
-  render(); save();
-};
-
-$('#backup').onclick = () => download(JSON.stringify(state, null, 2), 'metryczki-gks-dane.json', 'application/json');
-$('#restore').onclick = () => $('#file').click();
-$('#file').onchange = async (e) => {
-  try {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 200000) throw Error('Plik jest zbyt duży.');
-    const v = JSON.parse(await file.text());
-    if (!valid(v)) throw Error('Wybierz eksport danych z tej wersji.');
-    if (!confirm('Zastąpić dane i wybór konkurencji danymi z pliku?')) return;
-    state = v; render(); save();
-  } catch (err) {
-    $('#error').textContent = 'Import nie powiódł się: ' + err.message;
-  } finally {
-    e.target.value = '';
-  }
-};
-
-/* ============ start ============ */
-
 async function init() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(KEY));
-    if (valid(saved)) state = saved;
-    else {
-      const old = JSON.parse(localStorage.getItem('gks-multi-form-v3'));
-      if (old?.forms?.[0]?.values) {
-        for (const [k, , max] of FIELDS) {
-          const val = old.forms[0].values[k];
-          if (typeof val === 'string') state.shared[k] = val.slice(0, max);
-        }
-        $('#status').textContent = 'Przeniesiono dane zawodnika z poprzedniej wersji. Zaznacz konkurencje.';
-      }
-    }
-  } catch { /* brak zapisu */ }
-  render();
+  update();
   try {
     const r = await Promise.all(['formularz-gks.pdf', 'vendor/font.ttf'].map((p) => fetch(p)));
     if (r.some((x) => !x.ok)) throw Error('Nie udało się wczytać wzoru PDF.');
