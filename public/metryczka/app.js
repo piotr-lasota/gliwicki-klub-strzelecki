@@ -54,7 +54,8 @@ const EVENT_PAST_DAYS = 14;
 
 /** @type {{ shared: Record<string, string>, selected: string[] }} */
 const state = { shared: {}, selected: [] };
-let ready = false, busy = false, assets;
+let busy = false;
+let vendorPromise = null, assetsPromise = null;
 /** @type {Club[]} */
 let clubs = [];
 /** @type {Event[]} */
@@ -760,7 +761,7 @@ function update() {
   } else {
     summaryEl.textContent = n + ' ' + (n === 1 ? 'metryczka' : 'metryczki') + ' · ' + Math.ceil(n / 2) + ' ' + (n <= 2 ? 'kartka A4' : 'kartki A4') + '.';
   }
-  a4Button.disabled = !ready || busy || !complete;
+  a4Button.disabled = busy || !complete;
   printButton.disabled = busy || !complete;
   const tip = complete ? '' : summaryEl.textContent;
   setTip(a4Button, a4Button.disabled && tip ? tip : '');
@@ -781,12 +782,16 @@ function download(bytes, name, type) {
 }
 
 async function exportPDF() {
-  if (!ready || busy || !isComplete()) return;
+  if (busy || !isComplete()) return;
   busy = true;
   update();
   errorEl.textContent = '';
-  statusEl.textContent = 'Przygotowywanie PDF…';
+  statusEl.textContent = 'Wczytywanie bibliotek PDF…';
   try {
+    await ensureVendor();
+    statusEl.textContent = 'Wczytywanie czcionek…';
+    const assets = await ensureAssets();
+    statusEl.textContent = 'Przygotowywanie PDF…';
     const bytes = await fillPrintPDF(assets, forms());
     download(bytes, 'metryczki-gks-do-druku-A4.pdf', 'application/pdf');
     statusEl.textContent = 'Przygotowano PDF do pobrania. Otwórz zapisany plik w programie do PDF.';
@@ -877,17 +882,36 @@ async function fetchAssets() {
   return { regular, bold, logo };
 }
 
-async function init() {
+function ensureAssets() {
+  if (!assetsPromise) {
+    assetsPromise = fetchAssets();
+  }
+  return assetsPromise;
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('Nie udało się wczytać ' + src));
+    document.head.append(s);
+  });
+}
+
+function ensureVendor() {
+  if (!vendorPromise) {
+    vendorPromise = loadScript('vendor/pdf-lib.js')
+      .then(() => loadScript('vendor/fontkit.js'))
+      .then(() => loadScript('pdf.js?v=vector5'));
+  }
+  return vendorPromise;
+}
+
+function init() {
   update();
   void loadClubs();
   void loadEvents();
-  try {
-    assets = await fetchAssets();
-    ready = true;
-    update();
-  } catch (e) {
-    errorEl.textContent = e.message + ' Odśwież stronę.';
-  }
 }
 
 void init();
