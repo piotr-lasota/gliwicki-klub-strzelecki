@@ -46,6 +46,20 @@ Push na `main` uruchamia GitHub Actions i wdraża zawartość katalogu
 w `public/staticwebapp.config.json` (katalog `app_location` z workflow —
 Azure szuka pliku konfiguracji właśnie tam).
 
+## Pull requesty
+
+Pull request z brancha w tym repozytorium uruchamia GitHub Actions
+i tworzy podgląd strony dla tego PR-a. Po zamknięciu PR-a workflow usuwa
+środowisko podglądowe.
+
+Pull request z forka **nie utworzy strony podglądowej** — forki nie mają
+dostępu do sekretów repozytorium, więc wdrożenie się nie wykona. Aby
+zobaczyć zmiany z forka na żywo, maintainer musi przenieść je na branch
+w tym repozytorium. Dzięki temu podglądy nie powstają automatycznie dla
+każdego zgłoszenia i nie zużywają zasobów Azure przez boty.
+
+Pull request wysyła mail do mnie więc zauważę :-)
+
 ## Rozwój
 
 Strona nie wymaga Node.js ani procesu budowania. Do lokalnego podglądu
