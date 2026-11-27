@@ -119,7 +119,8 @@ function pdfDrawMeta(page, cardTop, data, fonts) {
   pdfTextCentered(page, 'Konkurencja', centers[0], labelBaseline, 7.1, fonts.bold);
   pdfTextCentered(page, 'Zmiana', centers[2], labelBaseline, 7.1, fonts.bold);
   pdfTextCentered(page, 'Stanowisko', centers[4], labelBaseline, 7.1, fonts.bold);
-  pdfTextCentered(page, 'Data zawodów', centers[6], labelBaseline, 7.1, fonts.bold);
+  pdfTextCentered(page, 'Miejsce i data', centers[6], middle + 3.9 - PDF_CAP * 7.1, 7.1, fonts.bold);
+  pdfTextCentered(page, 'zawodów', centers[6], middle - 3.9 - PDF_CAP * 7.1, 7.1, fonts.bold);
 
   const [categoryName, categoryCode] = String(data.Tekst1 ?? '').split('\n');
   const categoryMax = width * PDF_META.cols[1] / 100 - 4;

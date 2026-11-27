@@ -14,7 +14,7 @@ const CATEGORIES = [
   ['BP', 'BIG PISTOL (BP)'],
   ['LP', 'LITTLE PISTOL (LP)'],
   ['SR', 'SMALL RIFLE (SR)'],
-  ['SHOTGUN', 'SHOTGUN'],
+  ['SHOTGUN', 'SHOTGUN (SG)'],
 ];
 
 const FIELDS = [
@@ -32,6 +32,8 @@ const PLACE = 'Gliwice';
 const MIN_YEAR = 1900;
 const CLUBS_URL = 'data/kluby.json';
 const CLUB_LIMIT = 50;
+const EVENTS_URL = 'data/zawody.json';
+const EVENT_PAST_DAYS = 14;
 
 /**
  * @typedef {Object} Club
@@ -43,12 +45,22 @@ const CLUB_LIMIT = 50;
  * @property {string} City
  */
 
+/**
+ * @typedef {Object} Event
+ * @property {string} date
+ * @property {string} title
+ * @property {string} [subtitle]
+ */
+
 /** @type {{ shared: Record<string, string>, selected: string[] }} */
 const state = { shared: {}, selected: [] };
 let ready = false, busy = false, assets;
 /** @type {Club[]} */
 let clubs = [];
+/** @type {Event[]} */
+let events = [];
 let clubSiedziba = null, clubError = null, refreshClubOptions = () => {};
+let refreshEventOptions = () => {}, eventsError = '';
 
 /** @type {Map<string, { key: string, input: HTMLInputElement, error: HTMLElement, required: boolean, touched: boolean }>} */
 const fieldStates = new Map();
@@ -127,6 +139,37 @@ function searchClubs(query) {
   return found.slice(0, CLUB_LIMIT).map((entry) => entry.club);
 }
 
+function listEvents() {
+  const today = new Date();
+  const cutoff = new Date(today.getFullYear(), today.getMonth(), today.getDate() - EVENT_PAST_DAYS);
+  const found = [];
+  events.forEach((event, index) => {
+    const date = parseEventDate(event.date);
+    if (!date) return;
+    found.push({ event, date, selectable: date >= cutoff, index });
+  });
+  found.sort((a, b) => b.date - a.date || a.index - b.index);
+  return found;
+}
+
+function parseEventDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value ?? ''));
+  if (!match) return null;
+  const [year, month, day] = match.slice(1).map(Number);
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+  return date;
+}
+
+function eventDateLabel(date) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()}`;
+}
+
+function eventName(event) {
+  return [event.title, event.subtitle].filter(Boolean).join(' · ');
+}
+
 function categoryParts(label) {
   const match = label.match(/^(.*?)\s*(\([^)]*\))\s*$/);
   return match ? [match[1], match[2]] : [label, ''];
@@ -183,7 +226,7 @@ function cardHTML(label) {
       <div class="cell val"></div>
       <div class="cell lab">Stanowisko</div>
       <div class="cell val"></div>
-      <div class="cell lab">Data zawodów</div>
+      <div class="cell lab">Miejsce i data<br>zawodów</div>
       <div class="cell val">${esc(competitionDate())}</div>
     </div>
 
@@ -448,6 +491,199 @@ function createClubFields() {
   };
 }
 
+function createEventPicker() {
+  const dateInput = $('#data-Tekst3');
+  if (!dateInput) return;
+
+  const field = document.createElement('label');
+  field.className = 'wide';
+  field.textContent = 'Zawody';
+
+  const box = document.createElement('div');
+  box.className = 'club-combobox';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.id = 'data-zawody';
+  input.autocomplete = 'off';
+  input.readOnly = true;
+  input.placeholder = 'Wybierz zawody z listy…';
+  input.setAttribute('role', 'combobox');
+  input.setAttribute('aria-expanded', 'false');
+  input.setAttribute('aria-controls', 'event-options');
+  input.setAttribute('aria-readonly', 'true');
+
+  const list = document.createElement('ul');
+  list.className = 'club-options event-options';
+  list.id = 'event-options';
+  list.setAttribute('role', 'listbox');
+  list.hidden = true;
+
+  const error = document.createElement('small');
+  error.className = 'field-error';
+  error.setAttribute('role', 'status');
+
+  box.append(input, list);
+  field.append(box, error);
+  sharedRoot.prepend(field);
+
+  let selected = null;
+  let matches = [];
+  let active = -1;
+  let open = false;
+
+  function closeList() {
+    open = false;
+    list.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+  }
+
+  function highlight() {
+    Array.from(list.children).forEach((element, index) => {
+      element.classList.toggle('active', index === active && element.getAttribute('role') === 'option');
+    });
+    if (active >= 0 && list.children[active]) {
+      input.setAttribute('aria-activedescendant', list.children[active].id);
+      list.children[active].scrollIntoView({ block: 'nearest' });
+    } else {
+      input.removeAttribute('aria-activedescendant');
+    }
+  }
+
+  function moveActive(step) {
+    if (!matches.length) return;
+    let index = active;
+    for (let i = 0; i < matches.length; i++) {
+      index = index < 0
+        ? (step === 1 ? 0 : matches.length - 1)
+        : (index + step + matches.length) % matches.length;
+      if (matches[index].selectable) {
+        active = index;
+        return;
+      }
+    }
+    active = -1;
+  }
+
+  function selectEvent(event) {
+    selected = event;
+    input.value = eventName(event);
+    state.shared.Tekst3 = event.date;
+    dateInput.value = event.date;
+    closeList();
+    update();
+  }
+
+  function renderOptions() {
+    if (!open) {
+      closeList();
+      return;
+    }
+    matches = listEvents();
+    list.textContent = '';
+    if (!matches.length) {
+      const empty = document.createElement('li');
+      empty.className = 'event-empty';
+      empty.textContent = eventsError || 'Lista zawodów jeszcze się wczytuje…';
+      list.append(empty);
+      active = -1;
+    } else {
+      matches.forEach((entry, index) => {
+        const item = document.createElement('li');
+        item.id = 'event-option-' + index;
+        item.setAttribute('role', 'option');
+
+        const name = document.createElement('span');
+        name.className = 'event-name';
+        name.textContent = eventDateLabel(entry.date) + ' - ' + entry.event.title;
+
+        const subtitle = String(entry.event.subtitle ?? '').trim();
+        const metaText = [subtitle, entry.selectable ? '' : 'przeszłe'].filter(Boolean).join(' · ');
+        const meta = document.createElement('span');
+        meta.className = 'event-meta';
+        meta.textContent = metaText;
+
+        if (!entry.selectable) {
+          item.classList.add('past');
+          item.setAttribute('aria-disabled', 'true');
+          item.title = 'Zawody przeszłe — nie można ich wybrać.';
+        } else {
+          item.setAttribute('aria-selected', String(entry.event === selected));
+          item.onclick = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            selectEvent(entry.event);
+          };
+          item.onmouseenter = () => {
+            active = index;
+            highlight();
+          };
+        }
+
+        item.onmousedown = (event) => event.preventDefault();
+        item.append(name);
+        if (metaText) item.append(meta);
+        list.append(item);
+      });
+      if (active >= matches.length || active < 0 || !matches[active]?.selectable) active = -1;
+    }
+    list.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+    highlight();
+  }
+
+  input.onfocus = () => {
+    open = true;
+    active = -1;
+    renderOptions();
+  };
+
+  input.onclick = () => {
+    open = true;
+    renderOptions();
+  };
+
+  input.onblur = () => {
+    setTimeout(() => {
+      if (document.activeElement !== input) closeList();
+    }, 100);
+  };
+
+  input.onkeydown = (event) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (!open) {
+        open = true;
+        renderOptions();
+      }
+      moveActive(event.key === 'ArrowDown' ? 1 : -1);
+      highlight();
+    } else if (event.key === 'Enter' && open) {
+      if (active < 0 && matches.length === 1 && matches[0].selectable) active = 0;
+      if (active >= 0 && matches[active]?.selectable) {
+        event.preventDefault();
+        selectEvent(matches[active].event);
+      }
+    } else if (event.key === 'Escape' && open) {
+      event.preventDefault();
+      closeList();
+    }
+  };
+
+  dateInput.addEventListener('input', () => {
+    if (selected && selected.date !== dateInput.value) {
+      selected = null;
+      input.value = '';
+    }
+  });
+
+  refreshEventOptions = () => {
+    error.textContent = eventsError;
+    if (open) renderOptions();
+  };
+}
+
 async function fetchClubs() {
   const response = await fetch(CLUBS_URL, { cache: 'no-cache' });
   if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -470,6 +706,29 @@ async function loadClubs() {
       clubSiedziba.readOnly = false;
       clubSiedziba.placeholder = 'Wpisz siedzibę klubu';
     }
+  }
+}
+
+async function fetchEvents() {
+  const response = await fetch(EVENTS_URL, { cache: 'no-cache' });
+  if (!response.ok) throw new Error('HTTP ' + response.status);
+  const payload = await response.json();
+  const list = payload && Array.isArray(payload.zawody) ? payload.zawody : [];
+  const found = list.filter((event) => event && parseEventDate(event.date) && String(event.title ?? '').trim());
+  if (!found.length) throw new Error('Lista zawodów jest pusta.');
+  return found;
+}
+
+async function loadEvents() {
+  try {
+    events = await fetchEvents();
+    eventsError = '';
+    refreshEventOptions();
+  } catch (e) {
+    console.error(e);
+    events = [];
+    eventsError = 'Nie udało się wczytać listy zawodów. Wybierz datę ręcznie.';
+    refreshEventOptions();
   }
 }
 
@@ -572,6 +831,8 @@ for (const [key, label, max] of FIELDS) {
   sharedRoot.append(wrap);
 }
 
+createEventPicker();
+
 for (const [id, label] of CATEGORIES) {
   const wrap = document.createElement('label');
   const input = document.createElement('input');
@@ -605,6 +866,7 @@ async function fetchAssets() {
 async function init() {
   update();
   void loadClubs();
+  void loadEvents();
   try {
     assets = await fetchAssets();
     ready = true;

@@ -1,0 +1,24 @@
+{
+  "zawody": [
+    {
+      "date": "2026-12-01",
+      "title": "Gliwicki Turniej Strzelecki",
+      "subtitle": "Runda II"
+    },
+    {
+      "date": "2026-11-03",
+      "title": "Gliwicki Turniej Strzelecki",
+      "subtitle": "Runda I"
+    },
+    {
+      "date": "2025-10-07",
+      "title": "Gliwicki Turniej Strzelecki",
+      "subtitle": "Runda I"
+    },
+    {
+      "date": "2025-11-04",
+      "title": "Gliwicki Turniej Strzelecki",
+      "subtitle": "Runda II"
+    }
+  ]
+}

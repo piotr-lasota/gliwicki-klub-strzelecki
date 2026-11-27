@@ -12,14 +12,16 @@ public/
 ├── 404.html            # strona błędu
 ├── staticwebapp.config.json  # konfiguracja hostingu Azure
 └── metryczka/          # aplikacja do wypełniania metryczek PDF
-    └── data/kluby.json  # lista klubów do wyszukiwarki
+    └── data/
+        ├── kluby.json   # lista klubów do wyszukiwarki
+        └── zawody.json  # lista zawodów do wyboru daty
 ```
 
 ## Aplikacja metryczki
 
 Dostępna pod `/metryczka/`. Dane zawodnika i zawodów wpisuje się raz,
 a checkboxami wybiera od 1 do 4 konkurencji: BIG PISTOL (BP),
-LITTLE PISTOL (LP), SMALL RIFLE (SR) i SHOTGUN.
+LITTLE PISTOL (LP), SMALL RIFLE (SR) i SHOTGUN (SG).
 
 Do wygenerowania PDF lub wydruku wymagane są pola **Imię**, **Nazwisko**,
 **Klub**, **Rok urodzenia**, **Data zawodów** oraz co najmniej jedna
@@ -33,6 +35,11 @@ z informacją, czego brakuje.
   `public/metryczka/data/kluby.json` (po nazwie skróconej i pełnej).
   Po wybraniu klubu pole **Siedziba klubu** uzupełnia się automatycznie
   adresem z listy.
+- Pole **Zawody** (na górze formularza) pozwala wybrać zawody z
+  `public/metryczka/data/zawody.json` i uzupełnić nimi **Datę zawodów**.
+  Kliknięcie pola zawsze otwiera pełną listę, posortowaną od najnowszych.
+  Wybrać można zawody przyszłe oraz te sprzed nie więcej niż 14 dni.
+  Starsze pozycje są widoczne, ale przekreślone i nieaktywne.
 - **Pobierz** generuje wektorowy PDF A4 o tym samym układzie co podgląd
   (bez skanu formularza i grafiki tła), po dwie metryczki na stronie A4.
   Drukować: A4, pionowo, 1 strona na arkusz, jednostronnie.
