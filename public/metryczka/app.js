@@ -26,6 +26,8 @@ const FIELDS = [
   ['Tekst3', 'Data zawodów', 10],
 ];
 
+const REQUIRED_FIELDS = ['Nazwisko', 'comb_2', 'KLUB', 'urodzenia', 'Tekst3'];
+
 const PLACE = 'Gliwice';
 const MIN_YEAR = 1900;
 const CLUBS_URL = '../2026-kluby.json';
@@ -47,6 +49,38 @@ let ready = false, busy = false, assets;
 /** @type {Club[]} */
 let clubs = [];
 let clubSiedziba = null, clubError = null, refreshClubOptions = () => {};
+
+/** @type {Map<string, { key: string, input: HTMLInputElement, error: HTMLElement, required: boolean, touched: boolean }>} */
+const fieldStates = new Map();
+
+function missingRequired() {
+  return FIELDS
+    .filter(([key]) => REQUIRED_FIELDS.includes(key))
+    .filter(([key]) => !String(state.shared[key] ?? '').trim())
+    .map(([, label]) => label.toLowerCase());
+}
+
+function joinPl(items) {
+  if (items.length <= 1) return items.join('');
+  return items.slice(0, -1).join(', ') + ' oraz ' + items[items.length - 1];
+}
+
+function isComplete() {
+  return !missingRequired().length && yearValid() && state.selected.length > 0;
+}
+
+function fieldMessage(field) {
+  const value = String(state.shared[field.key] ?? '').trim();
+  if (!value) return field.required ? 'To pole jest wymagane.' : '';
+  if (field.key === 'urodzenia' && !yearValid()) return 'Podaj czterocyfrowy rok (1900 lub później).';
+  return '';
+}
+
+function refreshFieldErrors() {
+  for (const field of fieldStates.values()) {
+    if (field.touched) field.error.textContent = fieldMessage(field);
+  }
+}
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 
@@ -215,7 +249,7 @@ function createClubFields() {
 
   const label = document.createElement('label');
   label.htmlFor = 'data-KLUB';
-  label.textContent = 'Klub';
+  label.textContent = 'Klub *';
 
   const box = document.createElement('div');
   box.className = 'club-combobox';
@@ -230,6 +264,8 @@ function createClubFields() {
   input.setAttribute('aria-autocomplete', 'list');
   input.setAttribute('aria-expanded', 'false');
   input.setAttribute('aria-controls', 'club-options');
+  input.setAttribute('aria-required', 'true');
+  input.required = true;
   input.value = state.shared.KLUB || '';
 
   const list = document.createElement('ul');
@@ -242,8 +278,12 @@ function createClubFields() {
   error.className = 'field-error';
   error.setAttribute('role', 'status');
 
+  const requiredError = document.createElement('small');
+  requiredError.className = 'field-error';
+  requiredError.setAttribute('role', 'alert');
+
   box.append(input, list);
-  field.append(label, box, error);
+  field.append(label, box, error, requiredError);
   sharedRoot.append(field);
 
   const siedzibaField = document.createElement('label');
@@ -259,6 +299,7 @@ function createClubFields() {
 
   clubSiedziba = siedziba;
   clubError = error;
+  fieldStates.set('KLUB', { key: 'KLUB', input, error: requiredError, required: true, touched: false });
 
   let selected = null;
   let matches = [];
@@ -367,6 +408,11 @@ function createClubFields() {
   };
 
   input.onblur = () => {
+    const field = fieldStates.get('KLUB');
+    if (field) {
+      field.touched = true;
+      field.error.textContent = fieldMessage(field);
+    }
     setTimeout(() => {
       if (document.activeElement !== input) closeList();
     }, 100);
@@ -427,14 +473,33 @@ async function loadClubs() {
   }
 }
 
+function setTip(button, text) {
+  const wrap = button.parentElement;
+  if (!wrap || !wrap.classList.contains('action')) return;
+  if (text) wrap.dataset.tip = text;
+  else wrap.removeAttribute('data-tip');
+}
+
 function update() {
   const n = state.selected.length;
+  const missing = missingRequired();
   const yearOk = yearValid();
-  summaryEl.textContent = n === 0
-    ? 'Zaznacz co najmniej jedną konkurencję.'
-    : n + ' ' + (n === 1 ? 'metryczka' : 'metryczki') + ' · ' + Math.ceil(n / 2) + ' ' + (n <= 2 ? 'kartka A4' : 'kartki A4') + '.';
-  a4Button.disabled = !ready || busy || n === 0 || !yearOk;
-  printButton.disabled = n === 0 || !yearOk;
+  const complete = isComplete();
+  if (missing.length) {
+    summaryEl.textContent = 'Uzupełnij: ' + joinPl(missing) + '.';
+  } else if (!yearOk) {
+    summaryEl.textContent = 'Podaj czterocyfrowy rok urodzenia (1900 lub później).';
+  } else if (n === 0) {
+    summaryEl.textContent = 'Zaznacz co najmniej jedną konkurencję.';
+  } else {
+    summaryEl.textContent = n + ' ' + (n === 1 ? 'metryczka' : 'metryczki') + ' · ' + Math.ceil(n / 2) + ' ' + (n <= 2 ? 'kartka A4' : 'kartki A4') + '.';
+  }
+  a4Button.disabled = !ready || busy || !complete;
+  printButton.disabled = busy || !complete;
+  const tip = complete ? '' : summaryEl.textContent;
+  setTip(a4Button, a4Button.disabled && tip ? tip : '');
+  setTip(printButton, printButton.disabled && tip ? tip : '');
+  refreshFieldErrors();
   renderPreview();
 }
 
@@ -447,7 +512,7 @@ function download(bytes, name, type) {
 }
 
 async function exportPDF() {
-  if (!ready || busy || !state.selected.length) return;
+  if (!ready || busy || !isComplete()) return;
   busy = true; update();
   errorEl.textContent = '';
   statusEl.textContent = 'Przygotowywanie PDF…';
@@ -470,38 +535,40 @@ for (const [key, label, max] of FIELDS) {
     continue;
   }
   if (key === 'Siedziba') continue;
+  const required = REQUIRED_FIELDS.includes(key);
   const wrap = document.createElement('label');
-  wrap.textContent = label;
+  wrap.textContent = required ? label + ' *' : label;
   const input = document.createElement('input');
   input.id = 'data-' + key;
   input.type = key === 'Tekst3' ? 'date' : 'text';
   if (key !== 'Tekst3') input.maxLength = max;
-  let fieldError;
+  if (required) {
+    input.required = true;
+    input.setAttribute('aria-required', 'true');
+  }
   if (key === 'urodzenia') {
     input.inputMode = 'numeric';
     input.pattern = '[0-9]*';
     input.autocomplete = 'bday-year';
-    fieldError = document.createElement('small');
-    fieldError.className = 'field-error';
-    fieldError.setAttribute('role', 'alert');
   }
+  const fieldError = document.createElement('small');
+  fieldError.className = 'field-error';
+  fieldError.setAttribute('role', 'alert');
+  fieldStates.set(key, { key, input, error: fieldError, required, touched: false });
   input.oninput = () => {
     if (key === 'urodzenia') input.value = input.value.replace(/\D/g, '').slice(0, max);
     state.shared[key] = input.value;
-    if (fieldError) {
-      fieldError.textContent = input.value.length === max && !yearValid()
-        ? 'Podaj czterocyfrowy rok (1900 lub później).'
-        : '';
-    }
+    const field = fieldStates.get(key);
+    if (field?.touched) field.error.textContent = fieldMessage(field);
     update();
   };
-  if (fieldError) {
-    input.onblur = () => {
-      fieldError.textContent = input.value && !yearValid() ? 'Podaj czterocyfrowy rok (1900 lub później).' : '';
-    };
-  }
-  wrap.append(input);
-  if (fieldError) wrap.append(fieldError);
+  input.onblur = () => {
+    const field = fieldStates.get(key);
+    if (!field) return;
+    field.touched = true;
+    field.error.textContent = fieldMessage(field);
+  };
+  wrap.append(input, fieldError);
   sharedRoot.append(wrap);
 }
 
@@ -526,7 +593,7 @@ for (const [id, label] of CATEGORIES) {
 }
 
 a4Button.onclick = () => exportPDF();
-printButton.onclick = () => window.print();
+printButton.onclick = () => { if (isComplete()) window.print(); };
 
 async function fetchAssets() {
   const r = await Promise.all(['vendor/LiberationSans-Regular.ttf', 'vendor/LiberationSans-Bold.ttf', '../assets/logo.jpg'].map((p) => fetch(p)));

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Metryczki na zawody — GKS</title>
-<link rel="stylesheet" href="style.css?v=clubs1">
+<link rel="stylesheet" href="style.css?v=tooltip1">
 </head>
 <body>
 <main class="noprint">
@@ -12,12 +12,12 @@
   <form id="entry">
     <section class="panel"><h2>1. Dane zawodnika i zawodów</h2><div id="shared" class="data-grid"></div></section>
     <section class="panel"><h2>2. Wybierz konkurencje</h2><div id="choices" class="choices"></div></section>
-    <section class="panel"><h2>3. Pobierz metryczki</h2><p id="summary" aria-live="polite"></p><div class="actions"><button id="a4" type="button" class="primary" disabled>Pobierz</button><button id="print" type="button">Drukuj</button></div><p class="hint">PDF A4 zawiera po dwie metryczki na kartce. Drukuj: <strong>A4, pionowo, 1 strona na arkusz, jednostronnie</strong>. Wyniki, stanowisko, zmiana i podpisy pozostają puste do uzupełnienia na zawodach.</p></section>
+    <section class="panel"><h2>3. Pobierz metryczki</h2><p id="summary" aria-live="polite"></p><div class="actions"><span class="action"><button id="a4" type="button" class="primary" aria-describedby="summary" disabled>Pobierz</button></span><span class="action"><button id="print" type="button" aria-describedby="summary">Drukuj</button></span></div><p class="hint">PDF A4 zawiera po dwie metryczki na kartce. Drukuj: <strong>A4, pionowo, 1 strona na arkusz, jednostronnie</strong>. Wyniki, stanowisko, zmiana i podpisy pozostają puste do uzupełnienia na zawodach.</p></section>
   </form>
   <p id="error" role="alert"></p><p id="status" role="status"></p>
   <p class="hint">Wypełnienie metryczki nie jest zgłoszeniem na zawody.</p>
 </main>
 <div id="preview" class="sheets" aria-label="Podgląd metryczek"></div>
-<script src="vendor/pdf-lib.js"></script><script src="vendor/fontkit.js"></script><script src="pdf.js?v=vector2"></script><script src="app.js?v=vector2"></script>
+<script src="vendor/pdf-lib.js"></script><script src="vendor/fontkit.js"></script><script src="pdf.js?v=vector2"></script><script src="app.js?v=required2"></script>
 </body>
 </html>

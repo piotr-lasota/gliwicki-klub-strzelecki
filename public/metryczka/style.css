@@ -1,11 +1,16 @@
 *{box-sizing:border-box}
 body{margin:0;background:#e9ece8;color:#23362c;font:14px Arial,sans-serif}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
+.action{position:relative;display:inline-flex}
+.action[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:0;z-index:30;width:max-content;max-width:260px;padding:8px 10px;border-radius:6px;background:#23362c;color:#fff;font-size:12px;font-weight:400;line-height:1.35;text-align:left;white-space:normal;box-shadow:0 6px 18px #0003;opacity:0;visibility:hidden;transform:translateY(3px);transition:opacity .12s,transform .12s,visibility .12s;pointer-events:none}
+.action[data-tip]:hover::after,.action[data-tip]:focus-within::after{opacity:1;visibility:visible;transform:translateY(0)}
 button{font:inherit;border:1px solid #ced7ce;border-radius:6px;padding:10px 13px;background:#fff;color:#244331;cursor:pointer}
 button:hover{background:#edf4ed}
 .primary{background:#23563d;color:#fff;border-color:#23563d}
 .primary:hover{background:#193f2d}
-button:disabled{opacity:.5;cursor:wait}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:disabled:hover{background:#fff}
+.primary:disabled:hover{background:#23563d}
 button:focus-visible{outline:2px solid #317755;outline-offset:3px}
 main{max-width:960px;margin:25px auto;padding:0 24px}
 h1{font-size:26px}

@@ -21,6 +21,12 @@ Dostępna pod `/metryczka/`. Dane zawodnika i zawodów wpisuje się raz,
 a checkboxami wybiera od 1 do 4 konkurencji: BIG PISTOL (BP),
 LITTLE PISTOL (LP), SMALL RIFLE (SR) i SHOTGUN.
 
+Do wygenerowania PDF lub wydruku wymagane są pola **Imię**, **Nazwisko**,
+**Klub**, **Rok urodzenia**, **Data zawodów** oraz co najmniej jedna
+konkurencja. Przyciski pozostają nieaktywne, dopóki formularz nie jest
+kompletny. Po najechaniu na nieaktywny przycisk pojawia się podpowiedź
+z informacją, czego brakuje.
+
 - Podgląd metryczek to czysty HTML/CSS w układzie oryginalnego formularza
   (bez grafiki w tle) — dwie metryczki na stronę A4.
 - Pole **Klub** jest wyszukiwarką klubów z listy
