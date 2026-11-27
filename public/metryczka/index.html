@@ -1,9 +1,26 @@
-<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Metryczki na zawody — GKS</title><link rel="stylesheet" href="style.css?v=choices1"></head><body>
-<header><div><b>METRYCZKI GKS</b><span>Przygotuj formularze przed zawodami</span></div><div class="actions"><button id="reset">Wyczyść</button><button id="backup">Eksport danych</button><button id="restore">Import danych</button></div></header>
-<main><h1>Twoje metryczki na zawody</h1><p>Wpisz dane raz, zaznacz konkurencje i pobierz gotowy zestaw na oryginalnych formularzach GKS.</p>
-<form id="entry"><section class="panel"><h2>1. Dane zawodnika i zawodów</h2><div id="shared" class="data-grid"></div></section>
-<section class="panel"><h2>2. Wybierz konkurencje</h2><p>Jedna zaznaczona konkurencja to jedna metryczka.</p><div id="choices" class="choices"></div></section>
-<section class="panel"><h2>3. Pobierz metryczki</h2><p id="summary" aria-live="polite"></p><div class="actions"><button id="a4" type="button" class="primary" disabled>Pobierz do druku — A4</button><button id="a5" type="button" disabled>Pobierz metryczki — A5</button></div><p class="hint">Zapisz plik i otwórz go w programie do PDF. Drukuj: <strong>A4, pionowo, 1 strona na arkusz, jednostronnie</strong>. W PDF A4 są już dwie metryczki na kartce. Przy 3 metryczkach trzecia znajduje się u góry drugiej kartki.</p><p class="hint">Wyniki, stanowisko, zmiana i podpisy pozostają puste do uzupełnienia na zawodach. PDF A5 zachowuje edytowalne pola.</p></section></form>
-<p id="error" role="alert"></p><p id="status" role="status"></p><p class="hint">Dane są zapisywane w tej przeglądarce. Na wspólnym komputerze po zakończeniu kliknij „Wyczyść” i usuń pobrane pliki PDF. Wypełnienie metryczki nie jest zgłoszeniem na zawody.</p>
-</main><input type="file" id="file" accept=".json,application/json" hidden>
-<script src="vendor/pdf-lib.js"></script><script src="vendor/fontkit.js"></script><script src="pdf.js?v=print-a4"></script><script src="app.js?v=choices1"></script></body></html>
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Metryczki na zawody — GKS</title>
+<link rel="stylesheet" href="style.css?v=layout8">
+</head>
+<body>
+<header class="noprint"><div><b>METRYCZKI GKS</b><span>Przygotuj formularze przed zawodami</span></div><div class="actions"><button id="reset">Wyczyść</button><button id="backup">Eksport danych</button><button id="restore">Import danych</button></div></header>
+<main class="noprint">
+  <h1>Twoje metryczki na zawody</h1>
+  <p>Wpisz dane raz, zaznacz konkurencje i pobierz gotowy zestaw na oryginalnych formularzach GKS.</p>
+  <form id="entry">
+    <section class="panel"><h2>1. Dane zawodnika i zawodów</h2><div id="shared" class="data-grid"></div></section>
+    <section class="panel"><h2>2. Wybierz konkurencje</h2><p>Jedna zaznaczona konkurencja to jedna metryczka.</p><div id="choices" class="choices"></div></section>
+    <section class="panel"><h2>3. Pobierz metryczki</h2><p id="summary" aria-live="polite"></p><div class="actions"><button id="a4" type="button" class="primary" disabled>Pobierz</button><button id="print" type="button">Drukuj</button></div><p class="hint">PDF A4 zawiera po dwie metryczki na kartce. Drukuj: <strong>A4, pionowo, 1 strona na arkusz, jednostronnie</strong>. Wyniki, stanowisko, zmiana i podpisy pozostają puste do uzupełnienia na zawodach.</p></section>
+  </form>
+  <p id="error" role="alert"></p><p id="status" role="status"></p>
+  <p class="hint">Dane są zapisywane w tej przeglądarce. Na wspólnym komputerze po zakończeniu kliknij „Wyczyść” i usuń pobrane pliki PDF. Wypełnienie metryczki nie jest zgłoszeniem na zawody.</p>
+</main>
+<div id="preview" class="sheets" aria-label="Podgląd metryczek"></div>
+<input type="file" id="file" accept=".json,application/json" hidden>
+<script src="vendor/pdf-lib.js"></script><script src="vendor/fontkit.js"></script><script src="pdf.js?v=print-a4"></script><script src="app.js?v=layout8"></script>
+</body>
+</html>

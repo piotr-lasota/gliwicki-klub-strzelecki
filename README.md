@@ -20,14 +20,14 @@ Dostępna pod `/metryczka/`. Dane zawodnika i zawodów wpisuje się raz,
 a checkboxami wybiera od 1 do 4 konkurencji: BIG PISTOL (BP),
 LITTLE PISTOL (LP), SMALL RIFLE (SR) i SHOTGUN.
 
-- **Pobierz do druku — A4** generuje dwie metryczki na każdej stronie A4.
-  Przy trzech metryczkach trzecia jest w górnej połowie drugiej strony.
-  Zapisany PDF należy drukować z programu do PDF: A4, pionowo,
-  jedna strona na arkusz, jednostronnie.
-- **Pobierz metryczki — A5** zachowuje osobne strony z edytowalnymi polami.
-- Wydruk zachowuje oryginalny wzór PDF. Wyniki, stanowisko, zmiana
-  i podpisy pozostają puste do uzupełnienia na zawodach.
-- Aplikacja nie wywołuje automatycznie okna drukowania przeglądarki.
+- Podgląd metryczek to czysty HTML/CSS w układzie oryginalnego formularza
+  (bez grafiki w tle) — dwie metryczki na stronę A4.
+- **Pobierz** generuje PDF z oryginalnego formularza,
+  po dwie metryczki na stronie A4. Drukować: A4, pionowo, 1 strona
+  na arkusz, jednostronnie.
+- **Drukuj** drukuje podgląd HTML (2 metryczki na A4).
+- Wyniki, stanowisko, zmiana i podpisy pozostają puste do uzupełnienia
+  na zawodach.
 
 Dane są zapisywane wyłącznie lokalnie w przeglądarce (`localStorage`).
 Na wspólnym komputerze po pracy należy użyć przycisku „Wyczyść”
