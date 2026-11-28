@@ -883,6 +883,23 @@ for (const [id, label] of CATEGORIES) {
   choicesRoot.append(wrap);
 }
 
+const selectAll = $('#select-all');
+const choiceBoxes = [...choicesRoot.querySelectorAll('input')];
+function refreshSelectAll() {
+  const n = choiceBoxes.filter((b) => b.checked).length;
+  const all = n === choiceBoxes.length;
+  selectAll.dataset.state = all ? 'all' : n ? 'some' : 'none';
+  selectAll.querySelector('.select-all-label').textContent = all ? 'Odznacz wszystkie' : 'Zaznacz wszystkie';
+  selectAll.querySelector('.select-all-count').textContent = n + '/' + choiceBoxes.length;
+}
+choicesRoot.addEventListener('change', refreshSelectAll);
+selectAll.onclick = () => {
+  const check = choiceBoxes.some((b) => !b.checked);
+  choiceBoxes.forEach((b) => { b.checked = check; });
+  choiceBoxes[0].dispatchEvent(new Event('change', { bubbles: true }));
+};
+refreshSelectAll();
+
 a4Button.onclick = () => exportPDF();
 printButton.onclick = () => {
   if (isComplete()) window.print();
