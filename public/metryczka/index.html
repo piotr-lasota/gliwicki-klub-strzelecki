@@ -7,7 +7,7 @@
   <link href="/favicon.svg" rel="icon" type="image/svg+xml">
   <link href="/apple-touch-icon.png" rel="apple-touch-icon">
   <link href="../fonts.css" rel="stylesheet">
-  <link href="style.css?v=theme5" rel="stylesheet">
+  <link href="style.css?v=theme6" rel="stylesheet">
 </head>
 <body>
 <main class="noprint">
@@ -24,7 +24,12 @@
     <section class="panel"><h2>1. Dane zawodnika i zawodów</h2>
       <div class="data-grid" id="shared"></div>
     </section>
-    <section class="panel"><h2>2. Wybierz konkurencje</h2>
+    <section class="panel">
+      <div class="panel-head"><h2>2. Wybierz konkurencje</h2>
+        <button aria-controls="choices" class="select-all" id="select-all" type="button"><span
+          aria-hidden="true" class="select-all-box"></span><span class="select-all-label">Zaznacz wszystkie</span><span
+          class="select-all-count">0/4</span></button>
+      </div>
       <div class="choices" id="choices"></div>
     </section>
     <section class="panel"><h2>3. Pobierz metryczki</h2>
@@ -42,6 +47,6 @@
 </main>
 <div aria-label="Podgląd metryczek" class="sheets" id="preview"></div>
 <script src="layout.js?v=1"></script>
-<script src="app.js?v=lazy2"></script>
+<script src="app.js?v=selectall1"></script>
 </body>
 </html>
